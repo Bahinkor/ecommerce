@@ -6,9 +6,12 @@ import { UsersModule } from "./users/users.module";
 
 @Module({
   imports: [
+    // configuration
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+
+    // database connection
     TypeOrmModule.forRoot({
       type: "mysql",
       host: process.env.DB_HOST,
@@ -19,6 +22,8 @@ import { UsersModule } from "./users/users.module";
       entities: [`${__dirname}/**/entities/*.entity{.ts,.js}`],
       synchronize: true,
     }),
+
+    // modules
     UsersModule,
   ],
 })

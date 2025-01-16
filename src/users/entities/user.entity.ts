@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, MaxLength, MinLength } from "class-validator";
+import { IsNotEmpty, IsString, Length, MaxLength, MinLength } from "class-validator";
 import { Column, CreateDateColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 import UserRoleEnum from "../enums/userRole.enum";
@@ -7,7 +7,9 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ unique: true })
+  @Column({ unique: true, length: 11 })
+  @IsString()
+  @Length(11, 11)
   phone_number: string;
 
   @Column()
