@@ -6,14 +6,14 @@ import UserRoleEnum from "../enums/userRole.enum";
 export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
+  display_name: string;
+
+  @IsString()
+  @IsNotEmpty()
   @Transform(({ value }) => value.trim())
   @Length(11, 11)
   @Matches(/^09[0-9]{9}$/)
   phone_number: string;
-
-  @IsString()
-  @IsNotEmpty()
-  display_name: string;
 
   @IsString()
   @IsOptional()
