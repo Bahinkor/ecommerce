@@ -5,6 +5,7 @@ import { Repository } from "typeorm";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { User } from "./entities/user.entity";
+import UserRoleEnum from "./enums/userRole.enum";
 
 @Injectable()
 export class UsersService {
@@ -23,8 +24,17 @@ export class UsersService {
     }
   }
 
-  findAll() {
-    return `This action returns all users`;
+  findAll(role?: UserRoleEnum, limit: number = 10, page: number = 1): Promise<User[]> {
+    const query = this.userRepository.createQueryBuilder("users");
+
+    if (role) {
+      query.where("role = :role", { role });
+    }
+
+    // pagination
+    query.skip((page - 1) * limit).take(limit);
+
+    return query.getMany();
   }
 
   findOne(id: number) {

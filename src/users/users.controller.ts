@@ -1,8 +1,20 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Res } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Res,
+} from "@nestjs/common";
 import { Response } from "express";
 
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
+import UserRoleEnum from "./enums/userRole.enum";
 import { UsersService } from "./users.service";
 
 @Controller("users")
@@ -21,8 +33,19 @@ export class UsersController {
   }
 
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  async findAll(
+    @Res() res: Response,
+    @Query("role") role?: UserRoleEnum,
+    @Query("limit") limit: number = 10,
+    @Query("page") page: number = 1,
+  ): Promise<object> {
+    const users = await this.usersService.findAll(role, limit, page);
+
+    return res.status(HttpStatus.OK).json({
+      data: users,
+      statusCode: HttpStatus.OK,
+      message: "Users fetched successfully",
+    });
   }
 
   @Get(":id")
