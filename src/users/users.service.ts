@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
@@ -37,15 +37,31 @@ export class UsersService {
     return query.getMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: number): Promise<User> {
+    const user = await this.userRepository.findOneBy({ id });
+
+    if (!user) throw new NotFoundException(`User id ${id} not found`);
+
+    return user;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
+    try {
+      const user = await this.findOne(id);
+
+      if (!user) throw new NotFoundException(`User id ${id} not found`);
+
+      await this.userRepository.update({ id }, updateUserDto);
+
+      return await this.findOne(id);
+    } catch (e) {
+      throw new BadRequestException(e.message);
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: number): Promise<void> {
+    const deleteResult = await this.userRepository.delete({ id });
+
+    if (!deleteResult.affected) throw new NotFoundException(`User id ${id} not found`);
   }
 }

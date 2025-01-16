@@ -5,8 +5,8 @@ import {
   Get,
   HttpStatus,
   Param,
-  Patch,
   Post,
+  Put,
   Query,
   Res,
 } from "@nestjs/common";
@@ -49,17 +49,38 @@ export class UsersController {
   }
 
   @Get(":id")
-  findOne(@Param("id") id: string) {
-    return this.usersService.findOne(+id);
+  async findOne(@Param("id") id: string, @Res() res: Response): Promise<object> {
+    const user = await this.usersService.findOne(+id);
+
+    return res.status(HttpStatus.OK).json({
+      data: user,
+      statusCode: HttpStatus.OK,
+      message: "User fetched successfully",
+    });
   }
 
-  @Patch(":id")
-  update(@Param("id") id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  @Put(":id")
+  async update(
+    @Res() res: Response,
+    @Param("id") id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ): Promise<object> {
+    const updatedUser = await this.usersService.update(+id, updateUserDto);
+
+    return res.status(HttpStatus.OK).json({
+      data: updatedUser,
+      statusCode: HttpStatus.OK,
+      message: "User updated successfully",
+    });
   }
 
   @Delete(":id")
-  remove(@Param("id") id: string) {
-    return this.usersService.remove(+id);
+  async remove(@Param("id") id: string, @Res() res: Response): Promise<object> {
+    await this.usersService.remove(+id);
+
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      message: "User deleted successfully",
+    });
   }
 }
