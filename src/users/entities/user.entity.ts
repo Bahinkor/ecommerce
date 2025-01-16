@@ -19,7 +19,7 @@ export class User {
   @MaxLength(35)
   display_name: string;
 
-  @Column()
+  @Column({ nullable: true })
   password: string;
 
   @Column({ type: "enum", enum: UserRoleEnum, default: UserRoleEnum.NormalUser })
