@@ -14,10 +14,10 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ length: 35 })
   @IsString()
   @IsNotEmpty()
-  @Length(2, 35)
+  @Length(1, 35)
   display_name: string;
 
   @Column({ unique: true, length: 11 })

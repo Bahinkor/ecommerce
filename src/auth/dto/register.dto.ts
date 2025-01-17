@@ -1,17 +1,7 @@
 import { Transform } from "class-transformer";
-import {
-  IsEnum,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  Length,
-  Matches,
-  MaxLength,
-} from "class-validator";
+import { IsNotEmpty, IsString, Length, Matches, MaxLength } from "class-validator";
 
-import UserRoleEnum from "../enums/userRole.enum";
-
-export class CreateUserDto {
+export class Register {
   @IsString()
   @IsNotEmpty()
   @MaxLength(35)
@@ -25,11 +15,7 @@ export class CreateUserDto {
   phone_number: string;
 
   @IsString()
-  @IsOptional()
+  @IsNotEmpty()
   @Length(6, 16)
   password: string;
-
-  @IsEnum(UserRoleEnum)
-  @IsOptional()
-  role: UserRoleEnum;
 }
