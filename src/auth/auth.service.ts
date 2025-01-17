@@ -27,7 +27,7 @@ export class AuthService {
     }
   }
 
-  async login(phoneNumber: string, password: string) {
+  async login(phoneNumber: string, password: string): Promise<object> {
     const user = await this.userService.findOneByPhoneNumber(phoneNumber);
     const isMatchPassword: boolean = await bcrypt.compare(password, user.password);
 
@@ -38,5 +38,8 @@ export class AuthService {
       phone_number: user.phone_number,
       display_name: user.display_name,
     };
+    const accessToken = this.jwtService.sign(payload);
+
+    return { accessToken };
   }
 }
