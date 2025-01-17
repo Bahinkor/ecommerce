@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
 import { User } from "src/users/entities/user.entity";
@@ -25,5 +25,18 @@ export class AuthService {
     } catch (e) {
       throw new BadRequestException(e.message);
     }
+  }
+
+  async login(phoneNumber: string, password: string) {
+    const user = await this.userService.findOneByPhoneNumber(phoneNumber);
+    const isMatchPassword: boolean = await bcrypt.compare(password, user.password);
+
+    if (!isMatchPassword) throw new UnauthorizedException("password or phone number is not valid");
+
+    const payload = {
+      sub: user.id,
+      phone_number: user.phone_number,
+      display_name: user.display_name,
+    };
   }
 }
