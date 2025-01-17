@@ -45,10 +45,13 @@ export class UsersService {
     return user;
   }
 
-  async findOneByPhoneNumber(phoneNumber: string): Promise<User> {
+  async findOneByPhoneNumber(
+    phoneNumber: string,
+    checkExist: boolean = false,
+  ): Promise<User | null> {
     const user = await this.userRepository.findOneBy({ phone_number: phoneNumber });
 
-    if (!user) throw new NotFoundException(`User ${phoneNumber} not found`);
+    if (!user && !checkExist) throw new NotFoundException(`User ${phoneNumber} not found`);
 
     return user;
   }

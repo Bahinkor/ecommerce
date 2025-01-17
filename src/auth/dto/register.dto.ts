@@ -1,7 +1,7 @@
 import { Transform } from "class-transformer";
 import { IsNotEmpty, IsString, Length, Matches, MaxLength } from "class-validator";
 
-export class Register {
+export class RegisterDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(35)
