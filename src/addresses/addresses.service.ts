@@ -16,19 +16,28 @@ export class AddressesService {
     private readonly usersRepository: Repository<User>,
   ) {}
 
-  async create(createAddressDto: CreateAddressDto, userId: number): Promise<Address> {
+  async create(createAddressDto: CreateAddressDto): Promise<object> {
     try {
-      const user = await this.usersRepository.findOneByOrFail({ id: userId });
-      const newAddress = this.addressesRepository.create({ ...createAddressDto, user });
+      const { user_id, ...addressData } = createAddressDto;
+
+      const user = await this.usersRepository.findOneByOrFail({ id: user_id });
+      const newAddress = this.addressesRepository.create({ ...addressData, user });
 
       return await this.addressesRepository.save(newAddress);
     } catch (e) {
-      throw new NotFoundException(`User with id ${userId} not found.`);
+      throw new NotFoundException(`User with id ${createAddressDto.user_id} not found.`);
     }
   }
 
-  findAll(): Promise<Address[]> {
-    return this.addressesRepository.find({ relations: ["user"] });
+  findAll(limit: number = 10, page: number = 1): Promise<Address[]> {
+    const query = this.addressesRepository.createQueryBuilder("addresses");
+
+    query
+      .skip((page - 1) * limit)
+      .take(limit)
+      .leftJoinAndSelect("addresses.user", "user");
+
+    return query.getMany();
   }
 
   async findOne(id: number): Promise<Address> {

@@ -1,7 +1,11 @@
 import { Transform } from "class-transformer";
-import { IsNotEmpty, IsOptional, IsString, Length, Matches } from "class-validator";
+import { IsNotEmpty, IsNumber, IsOptional, IsString, Length, Matches } from "class-validator";
 
 export class CreateAddressDto {
+  @IsNumber()
+  @IsNotEmpty()
+  user_id: number;
+
   @IsString()
   @IsNotEmpty()
   province: string;
