@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import * as bcrypt from "bcrypt";
 import { Repository } from "typeorm";
 
 import { CreateUserDto } from "./dto/create-user.dto";
@@ -16,7 +17,8 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     try {
-      const newUser = this.userRepository.create(createUserDto);
+      const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+      const newUser = this.userRepository.create({ ...createUserDto, password: hashedPassword });
 
       return await this.userRepository.save(newUser);
     } catch (e) {
