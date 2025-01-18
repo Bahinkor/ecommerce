@@ -1,15 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { AddressesService } from './addresses.service';
-import { CreateAddressDto } from './dto/create-address.dto';
-import { UpdateAddressDto } from './dto/update-address.dto';
+import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/common";
 
-@Controller('addresses')
+import { AddressesService } from "./addresses.service";
+import { CreateAddressDto } from "./dto/create-address.dto";
+import { UpdateAddressDto } from "./dto/update-address.dto";
+
+@Controller("addresses")
 export class AddressesController {
   constructor(private readonly addressesService: AddressesService) {}
 
   @Post()
   create(@Body() createAddressDto: CreateAddressDto) {
-    return this.addressesService.create(createAddressDto);
+    return this.addressesService.create(createAddressDto, 1);
   }
 
   @Get()
@@ -17,18 +18,18 @@ export class AddressesController {
     return this.addressesService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
+  @Get(":id")
+  findOne(@Param("id") id: string) {
     return this.addressesService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAddressDto: UpdateAddressDto) {
+  @Patch(":id")
+  update(@Param("id") id: string, @Body() updateAddressDto: UpdateAddressDto) {
     return this.addressesService.update(+id, updateAddressDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
+  @Delete(":id")
+  remove(@Param("id") id: string) {
     return this.addressesService.remove(+id);
   }
 }
