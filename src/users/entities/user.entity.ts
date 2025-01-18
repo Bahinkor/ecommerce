@@ -1,8 +1,11 @@
 import { IsNotEmpty, IsString, Length } from "class-validator";
+// eslint-disable-next-line import/no-cycle
+import { Address } from "src/addresses/entities/address.entity";
 import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
@@ -30,6 +33,9 @@ export class User {
 
   @Column({ type: "enum", enum: UserRoleEnum, default: UserRoleEnum.NormalUser })
   role: UserRoleEnum;
+
+  @OneToMany(() => Address, (address: Address) => address.user)
+  addresses: Address[];
 
   @CreateDateColumn()
   created_at: Date;
