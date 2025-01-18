@@ -18,7 +18,7 @@ export class Address {
   @Column()
   @IsString()
   @IsNotEmpty()
-  privince: string;
+  province: string;
 
   @Column()
   @IsString()
@@ -40,7 +40,7 @@ export class Address {
   @IsString()
   @IsNotEmpty()
   @Length(11, 11)
-  reciver_phone_number: string;
+  receiver_phone_number: string;
 
   @Column({ nullable: true })
   descriptions: string;
