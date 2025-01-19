@@ -1,11 +1,11 @@
 import { IsNotEmpty, IsString } from "class-validator";
-// eslint-disable-next-line import/no-cycle
 import { User } from "src/users/entities/user.entity";
 import {
   Column,
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
@@ -32,6 +32,12 @@ export class Ticket {
 
   @ManyToOne(() => User, (user: User) => user.tickets)
   user: User;
+
+  @ManyToOne(() => Ticket, (ticket: Ticket) => ticket.replies, { nullable: true })
+  reply_to: Ticket;
+
+  @OneToMany(() => Ticket, (ticket: Ticket) => ticket.reply_to)
+  replies: Ticket[];
 
   @CreateDateColumn()
   created_at: Date;
