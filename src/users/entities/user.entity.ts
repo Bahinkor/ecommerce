@@ -1,6 +1,8 @@
 import { IsNotEmpty, IsString, Length } from "class-validator";
 // eslint-disable-next-line import/no-cycle
 import { Address } from "src/addresses/entities/address.entity";
+// eslint-disable-next-line import/no-cycle
+import { Ticket } from "src/tickets/entities/ticket.entity";
 import {
   Column,
   CreateDateColumn,
@@ -36,6 +38,9 @@ export class User {
 
   @OneToMany(() => Address, (address: Address) => address.user)
   addresses: Address[];
+
+  @OneToMany(() => Ticket, (ticket: Ticket) => ticket.user)
+  tickets: Ticket[];
 
   @CreateDateColumn()
   created_at: Date;
