@@ -4,8 +4,8 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 
 import { AddressesModule } from "./addresses/addresses.module";
 import { AuthModule } from "./auth/auth.module";
+import { TicketsModule } from "./tickets/tickets.module";
 import { UsersModule } from "./users/users.module";
-import { TicketsModule } from './tickets/tickets.module';
 
 @Module({
   imports: [
