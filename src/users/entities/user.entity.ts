@@ -1,7 +1,5 @@
 import { IsNotEmpty, IsString, Length } from "class-validator";
-// eslint-disable-next-line import/no-cycle
 import { Address } from "src/addresses/entities/address.entity";
-// eslint-disable-next-line import/no-cycle
 import { Ticket } from "src/tickets/entities/ticket.entity";
 import {
   Column,

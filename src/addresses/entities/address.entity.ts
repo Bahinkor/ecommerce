@@ -1,5 +1,4 @@
 import { IsNotEmpty, IsString, Length } from "class-validator";
-// eslint-disable-next-line import/no-cycle
 import { User } from "src/users/entities/user.entity";
 import {
   Column,
