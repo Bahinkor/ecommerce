@@ -1,4 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Res } from "@nestjs/common";
+import { Response } from "express";
 
 import { CreateTicketDto } from "./dto/create-ticket.dto";
 import { UpdateTicketDto } from "./dto/update-ticket.dto";
@@ -9,8 +10,14 @@ export class TicketsController {
   constructor(private readonly ticketsService: TicketsService) {}
 
   @Post()
-  create(@Body() createTicketDto: CreateTicketDto) {
-    return this.ticketsService.create(createTicketDto);
+  async create(@Res() res: Response, @Body() createTicketDto: CreateTicketDto) {
+    const newTicket = await this.ticketsService.create(createTicketDto);
+
+    return res.status(HttpStatus.CREATED).json({
+      data: newTicket,
+      statusCode: HttpStatus.CREATED,
+      message: "Ticket created successfully",
+    });
   }
 
   @Get()

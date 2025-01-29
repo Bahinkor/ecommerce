@@ -19,7 +19,11 @@ export class TicketsService {
     try {
       const { user_id, replay_to, ...ticketData } = createTicketDto;
       const user = await this.userService.findOne(user_id);
-      const replayToTicket = await this.ticketRepository.findOneByOrFail({ id: replay_to });
+
+      let replayToTicket: Ticket | null = null;
+      if (replay_to) {
+        replayToTicket = await this.ticketRepository.findOneByOrFail({ id: replay_to });
+      }
 
       const newTicket = this.ticketRepository.create({
         ...ticketData,
