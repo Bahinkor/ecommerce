@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { UsersService } from "src/users/users.service";
 import { Repository } from "typeorm";
@@ -22,7 +22,12 @@ export class TicketsService {
 
       let replayToTicket: Ticket | null = null;
       if (replay_to) {
-        replayToTicket = await this.ticketRepository.findOneByOrFail({ id: replay_to });
+        replayToTicket = await this.ticketRepository.findOneOrFail({
+          where: { id: replay_to },
+          relations: ["reply_to"],
+        });
+        if (replayToTicket.reply_to !== null)
+          throw new BadRequestException("You are not allowed to reply to this ticket.");
       }
 
       const newTicket = this.ticketRepository.create({
