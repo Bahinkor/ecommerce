@@ -1,8 +1,7 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Patch, Post, Res } from "@nestjs/common";
+import { Body, Controller, Get, HttpStatus, Param, Post, Res } from "@nestjs/common";
 import { Response } from "express";
 
 import { CreateTicketDto } from "./dto/create-ticket.dto";
-import { UpdateTicketDto } from "./dto/update-ticket.dto";
 import { TicketsService } from "./tickets.service";
 
 @Controller("tickets")
@@ -32,17 +31,13 @@ export class TicketsController {
   }
 
   @Get(":id")
-  findOne(@Param("id") id: string) {
-    return this.ticketsService.findOne(+id);
-  }
+  async findOne(@Res() res: Response, @Param("id") id: string) {
+    const ticket = await this.ticketsService.findOne(+id);
 
-  @Patch(":id")
-  update(@Param("id") id: string, @Body() updateTicketDto: UpdateTicketDto) {
-    return this.ticketsService.update(+id, updateTicketDto);
-  }
-
-  @Delete(":id")
-  remove(@Param("id") id: string) {
-    return this.ticketsService.remove(+id);
+    return res.status(HttpStatus.OK).json({
+      data: ticket,
+      statusCode: HttpStatus.OK,
+      message: "Ticket fetched successfully",
+    });
   }
 }

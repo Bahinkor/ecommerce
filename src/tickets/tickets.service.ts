@@ -4,7 +4,6 @@ import { UsersService } from "src/users/users.service";
 import { Repository } from "typeorm";
 
 import { CreateTicketDto } from "./dto/create-ticket.dto";
-import { UpdateTicketDto } from "./dto/update-ticket.dto";
 import { Ticket } from "./entities/ticket.entity";
 
 @Injectable()
@@ -49,15 +48,17 @@ export class TicketsService {
       .getMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} ticket`;
-  }
+  async findOne(id: number): Promise<Ticket> {
+    try {
+      const ticket = await this.ticketRepository.findOne({
+        where: { id },
+        relations: ["replies", "reply_to"],
+      });
+      if (!ticket) throw new NotFoundException(`Ticket id ${id} not found`);
 
-  update(id: number, updateTicketDto: UpdateTicketDto) {
-    return `This action updates a #${id} ticket`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} ticket`;
+      return ticket;
+    } catch (e) {
+      throw new BadRequestException(e.message);
+    }
   }
 }
