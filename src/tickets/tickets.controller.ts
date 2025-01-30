@@ -21,8 +21,14 @@ export class TicketsController {
   }
 
   @Get()
-  findAll() {
-    return this.ticketsService.findAll();
+  async findAll(@Res() res: Response) {
+    const tickets = await this.ticketsService.findAll();
+
+    return res.status(HttpStatus.OK).json({
+      data: tickets,
+      statusCode: HttpStatus.OK,
+      message: "Tickets fetched successfully",
+    });
   }
 
   @Get(":id")

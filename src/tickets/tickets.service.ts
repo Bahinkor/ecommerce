@@ -42,8 +42,11 @@ export class TicketsService {
     }
   }
 
-  findAll() {
-    return `This action returns all tickets`;
+  findAll(): Promise<Ticket[]> {
+    return this.ticketRepository
+      .createQueryBuilder("tickets")
+      .where("tickets.reply_to IS NULL")
+      .getMany();
   }
 
   findOne(id: number) {
