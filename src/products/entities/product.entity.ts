@@ -1,3 +1,4 @@
+import { MaxLength, Min } from "class-validator";
 import { Category } from "src/categories/entities/category.entity";
 import {
   Column,
@@ -14,15 +15,19 @@ export class Product {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @MaxLength(100)
+  @Column({ length: 100 })
   title: string;
 
-  @Column()
+  @MaxLength(1000)
+  @Column({ length: 1000 })
   description: string;
 
+  @Min(0)
   @Column()
   price: number;
 
+  @Min(0)
   @Column()
   stock: number;
 
