@@ -1,3 +1,4 @@
+import { MaxLength } from "class-validator";
 import { Product } from "src/products/entities/product.entity";
 import {
   Column,
@@ -13,7 +14,8 @@ export class Category {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @MaxLength(100)
+  @Column({ length: 100 })
   title: string;
 
   @CreateDateColumn()
