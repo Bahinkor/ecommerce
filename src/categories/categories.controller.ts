@@ -1,8 +1,9 @@
-import { Body, Controller, Get, HttpStatus, Post, Res } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Res } from "@nestjs/common";
 import { Response } from "express";
 
 import { CategoriesService } from "./categories.service";
 import { CreateCategoryDto } from "./dto/create-category.dto";
+import { UpdateCategoryDto } from "./dto/update-category.dto";
 
 @Controller("categories")
 export class CategoriesController {
@@ -27,6 +28,30 @@ export class CategoriesController {
       data: categories,
       statusCode: HttpStatus.OK,
       message: "Categories fetched successfully",
+    });
+  }
+
+  @Put(":id")
+  async update(
+    @Res() res: Response,
+    @Body() updateCategoryDto: UpdateCategoryDto,
+    @Param("id") id: string,
+  ) {
+    await this.categoriesService.update(+id, updateCategoryDto);
+
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      message: "Category updated successfully",
+    });
+  }
+
+  @Delete(":id")
+  async delete(@Res() res: Response, @Param("id") id: string) {
+    await this.categoriesService.remove(+id);
+
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      message: "Category removed successfully",
     });
   }
 }
