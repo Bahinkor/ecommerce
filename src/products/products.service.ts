@@ -45,8 +45,22 @@ export class ProductsService {
     return product;
   }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
+  async update(id: number, updateProductDto: UpdateProductDto): Promise<Product> {
+    const { title, description, price, stock, categoryIds } = updateProductDto;
+
+    const product: Product = await this.findOne(id);
+
+    if (title) product.title = title;
+    if (description) product.description = description;
+    if (price) product.price = price;
+    if (stock) product.stock = stock;
+
+    if (categoryIds) {
+      const categories: Category[] = await this.categoryRepository.findBy({ id: In(categoryIds) });
+      product.categories = categories;
+    }
+
+    return this.productRepository.save(product);
   }
 
   remove(id: number) {
