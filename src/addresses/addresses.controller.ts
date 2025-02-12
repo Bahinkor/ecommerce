@@ -5,6 +5,7 @@ import {
   Get,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -47,8 +48,8 @@ export class AddressesController {
   }
 
   @Get(":id")
-  async findOne(@Res() res: Response, @Param("id") id: string): Promise<object> {
-    const address = await this.addressesService.findOne(+id);
+  async findOne(@Res() res: Response, @Param("id", ParseIntPipe) id: number): Promise<object> {
+    const address = await this.addressesService.findOne(id);
 
     return res.status(HttpStatus.OK).json({
       data: address,
@@ -60,10 +61,10 @@ export class AddressesController {
   @Put(":id")
   async update(
     @Res() res: Response,
-    @Param("id") id: string,
+    @Param("id", ParseIntPipe) id: number,
     @Body() updateAddressDto: UpdateAddressDto,
   ): Promise<object> {
-    const updatedAddress = await this.addressesService.update(+id, updateAddressDto);
+    const updatedAddress = await this.addressesService.update(id, updateAddressDto);
 
     return res.status(HttpStatus.OK).json({
       data: updatedAddress,
@@ -73,8 +74,8 @@ export class AddressesController {
   }
 
   @Delete(":id")
-  async remove(@Res() res: Response, @Param("id") id: string): Promise<object> {
-    await this.addressesService.remove(+id);
+  async remove(@Res() res: Response, @Param("id", ParseIntPipe) id: number): Promise<object> {
+    await this.addressesService.remove(id);
 
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,

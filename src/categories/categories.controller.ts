@@ -1,4 +1,15 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Res } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  Res,
+} from "@nestjs/common";
 import { Response } from "express";
 
 import { CategoriesService } from "./categories.service";
@@ -35,9 +46,9 @@ export class CategoriesController {
   async update(
     @Res() res: Response,
     @Body() updateCategoryDto: UpdateCategoryDto,
-    @Param("id") id: string,
+    @Param("id", ParseIntPipe) id: number,
   ) {
-    await this.categoriesService.update(+id, updateCategoryDto);
+    await this.categoriesService.update(id, updateCategoryDto);
 
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
@@ -46,8 +57,8 @@ export class CategoriesController {
   }
 
   @Delete(":id")
-  async delete(@Res() res: Response, @Param("id") id: string) {
-    await this.categoriesService.remove(+id);
+  async delete(@Res() res: Response, @Param("id", ParseIntPipe) id: number) {
+    await this.categoriesService.remove(id);
 
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,

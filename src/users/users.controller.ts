@@ -5,6 +5,7 @@ import {
   Get,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -49,8 +50,8 @@ export class UsersController {
   }
 
   @Get(":id")
-  async findOne(@Param("id") id: string, @Res() res: Response): Promise<object> {
-    const user = await this.usersService.findOne(+id);
+  async findOne(@Param("id", ParseIntPipe) id: number, @Res() res: Response): Promise<object> {
+    const user = await this.usersService.findOne(id);
 
     return res.status(HttpStatus.OK).json({
       data: user,
@@ -62,10 +63,10 @@ export class UsersController {
   @Put(":id")
   async update(
     @Res() res: Response,
-    @Param("id") id: string,
+    @Param("id", ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<object> {
-    const updatedUser = await this.usersService.update(+id, updateUserDto);
+    const updatedUser = await this.usersService.update(id, updateUserDto);
 
     return res.status(HttpStatus.OK).json({
       data: updatedUser,
@@ -75,8 +76,8 @@ export class UsersController {
   }
 
   @Delete(":id")
-  async remove(@Param("id") id: string, @Res() res: Response): Promise<object> {
-    await this.usersService.remove(+id);
+  async remove(@Param("id", ParseIntPipe) id: number, @Res() res: Response): Promise<object> {
+    await this.usersService.remove(id);
 
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,

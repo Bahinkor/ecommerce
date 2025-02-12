@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpStatus, Param, Post, Res } from "@nestjs/common";
+import { Body, Controller, Get, HttpStatus, Param, ParseIntPipe, Post, Res } from "@nestjs/common";
 import { Response } from "express";
 
 import { CreateTicketDto } from "./dto/create-ticket.dto";
@@ -31,8 +31,8 @@ export class TicketsController {
   }
 
   @Get(":id")
-  async findOne(@Res() res: Response, @Param("id") id: string) {
-    const ticket = await this.ticketsService.findOne(+id);
+  async findOne(@Res() res: Response, @Param("id", ParseIntPipe) id: number) {
+    const ticket = await this.ticketsService.findOne(id);
 
     return res.status(HttpStatus.OK).json({
       data: ticket,
