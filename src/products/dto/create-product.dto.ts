@@ -1,4 +1,12 @@
-import { IsArray, IsInt, IsOptional, IsString, MaxLength, Min } from "class-validator";
+import {
+  ArrayMaxSize,
+  IsArray,
+  IsInt,
+  IsOptional,
+  IsString,
+  MaxLength,
+  Min,
+} from "class-validator";
 
 export class CreateProductDto {
   @IsString()
@@ -18,7 +26,7 @@ export class CreateProductDto {
   stock: number;
 
   @IsArray()
-  @MaxLength(5)
+  @ArrayMaxSize(5)
   @IsOptional()
   categoryIds?: number[];
 }
