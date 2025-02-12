@@ -48,9 +48,10 @@ export class CategoriesController {
     @Body() updateCategoryDto: UpdateCategoryDto,
     @Param("id", ParseIntPipe) id: number,
   ) {
-    await this.categoriesService.update(id, updateCategoryDto);
+    const category = await this.categoriesService.update(id, updateCategoryDto);
 
     return res.status(HttpStatus.OK).json({
+      data: category,
       statusCode: HttpStatus.OK,
       message: "Category updated successfully",
     });
