@@ -42,8 +42,12 @@ export class CategoriesService {
   }
 
   async remove(id: number): Promise<void> {
-    const deleteResult = await this.categoryRepository.delete({ id });
+    const category: Category = await this.findOne(id);
+    category.products = [];
 
-    if (!deleteResult.affected) throw new NotFoundException(`Category with id ${id} not found.`);
+    /// Unlink all associated products to prevent foreign key constraint issues
+    await this.categoryRepository.save(category);
+    // Remove the category from the database
+    await this.categoryRepository.remove(category);
   }
 }
