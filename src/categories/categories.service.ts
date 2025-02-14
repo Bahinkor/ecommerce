@@ -45,7 +45,7 @@ export class CategoriesService {
     const category: Category = await this.findOne(id);
     category.products = [];
 
-    /// Unlink all associated products to prevent foreign key constraint issues
+    // Unlink all associated products to prevent foreign key constraint issues
     await this.categoryRepository.save(category);
     // Remove the category from the database
     await this.categoryRepository.remove(category);
