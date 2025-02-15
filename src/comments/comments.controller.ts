@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpStatus, Post, Res } from "@nestjs/common";
+import { Body, Controller, Get, HttpStatus, Param, ParseIntPipe, Post, Res } from "@nestjs/common";
 import { Response } from "express";
 
 import { CommentsService } from "./comments.service";
@@ -22,6 +22,17 @@ export class CommentsController {
   @Get()
   async findAll(@Res() res: Response) {
     const comments = await this.commentsService.findAll();
+
+    return res.status(HttpStatus.OK).json({
+      data: comments,
+      statusCode: HttpStatus.OK,
+      message: "Comments fetched successfully",
+    });
+  }
+
+  @Get(":id")
+  async findOne(@Res() res: Response, @Param("id", ParseIntPipe) id: number) {
+    const comments = await this.commentsService.findOne(id);
 
     return res.status(HttpStatus.OK).json({
       data: comments,

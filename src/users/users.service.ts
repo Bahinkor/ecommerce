@@ -33,6 +33,7 @@ export class UsersService {
       query.where("role = :role", { role });
     }
 
+    query.addSelect("users.phone_number");
     // pagination
     query.skip((page - 1) * limit).take(limit);
 

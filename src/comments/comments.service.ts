@@ -1,8 +1,10 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { Product } from "src/products/entities/product.entity";
 import { ProductsService } from "src/products/products.service";
 import { UsersService } from "src/users/users.service";
-import { Repository } from "typeorm";
+import { clearPhoneNumber } from "src/utils/clearPhoneNumber";
+import { IsNull, Repository } from "typeorm";
 
 import { CreateCommentDto } from "./dto/create-comment.dto";
 import { Comment } from "./entities/comment.entity";
@@ -45,5 +47,19 @@ export class CommentsService {
 
   findAll(): Promise<Comment[]> {
     return this.commentRepository.find({ relations: ["product", "user"] });
+  }
+
+  async findOne(productId: number): Promise<Comment[]> {
+    await this.productsService.findOne(productId);
+
+    const comments = await this.commentRepository.find({
+      where: { product: { id: productId }, replay_to: IsNull(), is_accepted: true },
+      relations: ["product", "user", "replies", "replies.user"],
+    });
+
+    // remove phone_number from user data
+    clearPhoneNumber(comments);
+
+    return comments;
   }
 }
