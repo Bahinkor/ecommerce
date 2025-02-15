@@ -23,7 +23,10 @@ export class CommentsService {
 
     let replayToComment: Comment | null = null;
     if (replay_to) {
-      replayToComment = await this.commentRepository.findOne({ where: { id: replay_to } });
+      replayToComment = await this.commentRepository.findOne({
+        where: { id: replay_to },
+        relations: ["replay_to"],
+      });
 
       if (!replayToComment) throw new NotFoundException(`Comment id ${replay_to} is not found`);
       if (replayToComment.replay_to !== null)
@@ -41,6 +44,6 @@ export class CommentsService {
   }
 
   findAll(): Promise<Comment[]> {
-    return this.commentRepository.find({ relations: ["product", "user", "replies"] });
+    return this.commentRepository.find({ relations: ["product", "user"] });
   }
 }
