@@ -1,11 +1,13 @@
 import { MaxLength, Min } from "class-validator";
 import { Category } from "src/categories/entities/category.entity";
+import { Comment } from "src/comments/entities/comment.entity";
 import {
   Column,
   CreateDateColumn,
   Entity,
   JoinTable,
   ManyToMany,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
@@ -30,6 +32,9 @@ export class Product {
   @Min(0)
   @Column()
   stock: number;
+
+  @OneToMany(() => Comment, (comment: Comment) => comment.product)
+  comments: Comment[];
 
   @CreateDateColumn()
   created_at: Date;
