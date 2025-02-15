@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { ProductsService } from "src/products/products.service";
 import { UsersService } from "src/users/users.service";
 import { Repository } from "typeorm";
 
@@ -11,13 +12,14 @@ export class CommentsService {
   constructor(
     @InjectRepository(Comment)
     private readonly commentRepository: Repository<Comment>,
-
     private readonly usersService: UsersService,
+    private readonly productsService: ProductsService,
   ) {}
 
   async create(createCommentDto: CreateCommentDto): Promise<Comment> {
-    const { user_id, replay_to, ...commentData } = createCommentDto;
+    const { user_id, product_id, replay_to, ...commentData } = createCommentDto;
     const user = await this.usersService.findOne(user_id);
+    const product = await this.productsService.findOne(product_id);
 
     let replayToComment: Comment | null = null;
     if (replay_to) {
@@ -31,6 +33,7 @@ export class CommentsService {
     const comment = this.commentRepository.create({
       ...commentData,
       user,
+      product,
       replay_to: replayToComment,
     });
 
