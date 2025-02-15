@@ -1,20 +1,32 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/common";
+import { Body, Controller, Get, HttpStatus, Post, Res } from "@nestjs/common";
+import { Response } from "express";
 
 import { CommentsService } from "./comments.service";
 import { CreateCommentDto } from "./dto/create-comment.dto";
-import { UpdateCommentDto } from "./dto/update-comment.dto";
 
 @Controller("comments")
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}
 
   @Post()
-  create(@Body() createCommentDto: CreateCommentDto) {
-    return this.commentsService.create(createCommentDto);
+  async create(@Res() res: Response, @Body() createCommentDto: CreateCommentDto) {
+    const comment = await this.commentsService.create(createCommentDto);
+
+    return res.status(HttpStatus.CREATED).json({
+      data: comment,
+      statusCode: HttpStatus.CREATED,
+      message: "Comment created successfully",
+    });
   }
 
   @Get()
-  findAll() {
-    return this.commentsService.findAll();
+  async findAll(@Res() res: Response) {
+    const comments = await this.commentsService.findAll();
+
+    return res.status(HttpStatus.OK).json({
+      data: comments,
+      statusCode: HttpStatus.OK,
+      message: "Comments fetched successfully",
+    });
   }
 }
