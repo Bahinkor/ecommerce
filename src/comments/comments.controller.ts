@@ -1,4 +1,14 @@
-import { Body, Controller, Get, HttpStatus, Param, ParseIntPipe, Post, Res } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  Res,
+} from "@nestjs/common";
 import { Response } from "express";
 
 import { CommentsService } from "./comments.service";
@@ -41,7 +51,7 @@ export class CommentsController {
     });
   }
 
-  @Get("/accept/:id")
+  @Patch("/accept/:id")
   async acceptComment(@Res() res: Response, @Param("id", ParseIntPipe) id: number) {
     await this.commentsService.acceptComment(id);
 
