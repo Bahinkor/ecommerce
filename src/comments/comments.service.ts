@@ -52,10 +52,18 @@ export class CommentsService {
   async findProductComments(productId: number): Promise<Comment[]> {
     await this.productsService.findOne(productId);
 
-    const comments = await this.commentRepository.find({
-      where: { product: { id: productId }, replay_to: IsNull(), is_accepted: true },
-      relations: ["product", "user", "replies", "replies.user"],
-    });
+    const comments = await this.commentRepository
+      .createQueryBuilder("comment")
+      .leftJoinAndSelect("comment.replies", "reply", "reply.is_accepted = :isAccepted", {
+        isAccepted: true,
+      })
+      .leftJoinAndSelect("comment.product", "product")
+      .leftJoinAndSelect("comment.user", "user")
+      .leftJoinAndSelect("reply.user", "replyUser")
+      .where("comment.productId = :productId", { productId })
+      .andWhere("comment.replay_to IS NULL")
+      .andWhere("comment.is_accepted = true")
+      .getMany();
 
     // remove phone_number from user data
     clearPhoneNumber(comments);
