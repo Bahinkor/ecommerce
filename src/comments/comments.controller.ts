@@ -32,12 +32,22 @@ export class CommentsController {
 
   @Get(":id")
   async findOne(@Res() res: Response, @Param("id", ParseIntPipe) id: number) {
-    const comments = await this.commentsService.findOne(id);
+    const comments = await this.commentsService.findProductComments(id);
 
     return res.status(HttpStatus.OK).json({
       data: comments,
       statusCode: HttpStatus.OK,
       message: "Comments fetched successfully",
+    });
+  }
+
+  @Get("/accept/:id")
+  async acceptComment(@Res() res: Response, @Param("id", ParseIntPipe) id: number) {
+    await this.commentsService.acceptComment(id);
+
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      message: "Comment accepted successfully",
     });
   }
 }

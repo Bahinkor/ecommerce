@@ -49,7 +49,7 @@ export class CommentsService {
     return this.commentRepository.find({ relations: ["product", "user"] });
   }
 
-  async findOne(productId: number): Promise<Comment[]> {
+  async findProductComments(productId: number): Promise<Comment[]> {
     await this.productsService.findOne(productId);
 
     const comments = await this.commentRepository.find({
@@ -61,5 +61,20 @@ export class CommentsService {
     clearPhoneNumber(comments);
 
     return comments;
+  }
+
+  async findOne(id: number): Promise<Comment> {
+    const comment = await this.commentRepository.findOne({ where: { id } });
+
+    if (!comment) throw new NotFoundException(`Comment id ${id} is not found`);
+
+    return comment;
+  }
+
+  async acceptComment(id: number): Promise<void> {
+    const comment: Comment = await this.findOne(id);
+
+    comment.is_accepted = true;
+    await this.commentRepository.save(comment);
   }
 }
