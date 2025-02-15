@@ -1,26 +1,43 @@
-import { Injectable } from '@nestjs/common';
-import { CreateCommentDto } from './dto/create-comment.dto';
-import { UpdateCommentDto } from './dto/update-comment.dto';
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { UsersService } from "src/users/users.service";
+import { Repository } from "typeorm";
+
+import { CreateCommentDto } from "./dto/create-comment.dto";
+import { Comment } from "./entities/comment.entity";
 
 @Injectable()
 export class CommentsService {
-  create(createCommentDto: CreateCommentDto) {
-    return 'This action adds a new comment';
+  constructor(
+    @InjectRepository(Comment)
+    private readonly commentRepository: Repository<Comment>,
+
+    private readonly usersService: UsersService,
+  ) {}
+
+  async create(createCommentDto: CreateCommentDto): Promise<Comment> {
+    const { user_id, replay_to, ...commentData } = createCommentDto;
+    const user = await this.usersService.findOne(user_id);
+
+    let replayToComment: Comment | null = null;
+    if (replay_to) {
+      replayToComment = await this.commentRepository.findOne({ where: { id: replay_to } });
+
+      if (!replayToComment) throw new NotFoundException(`Comment id ${replay_to} is not found`);
+      if (replayToComment.replay_to !== null)
+        throw new BadRequestException("You are not allowed to reply to this comment.");
+    }
+
+    const comment = this.commentRepository.create({
+      ...commentData,
+      user,
+      replay_to: replayToComment,
+    });
+
+    return this.commentRepository.save(comment);
   }
 
-  findAll() {
-    return `This action returns all comments`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} comment`;
-  }
-
-  update(id: number, updateCommentDto: UpdateCommentDto) {
-    return `This action updates a #${id} comment`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} comment`;
+  findAll(): Promise<Comment[]> {
+    return this.commentRepository.find({ relations: ["product", "user", "replies"] });
   }
 }
