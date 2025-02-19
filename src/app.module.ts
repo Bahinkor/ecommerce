@@ -4,11 +4,11 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 
 import { AddressesModule } from "./addresses/addresses.module";
 import { AuthModule } from "./auth/auth.module";
+import { CategoriesModule } from "./categories/categories.module";
+import { CommentsModule } from "./comments/comments.module";
+import { ProductsModule } from "./products/products.module";
 import { TicketsModule } from "./tickets/tickets.module";
 import { UsersModule } from "./users/users.module";
-import { ProductsModule } from './products/products.module';
-import { CategoriesModule } from './categories/categories.module';
-import { CommentsModule } from './comments/comments.module';
 
 @Module({
   imports: [
