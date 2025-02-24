@@ -27,7 +27,7 @@ export class User {
   @Column({ unique: true, length: 11 })
   @IsString()
   @Length(11, 11)
-  phone_number: string;
+  phone_number?: string;
 
   @Column({ nullable: true, select: false })
   password: string;
