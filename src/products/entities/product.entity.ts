@@ -1,6 +1,7 @@
 import { MaxLength, Min } from "class-validator";
 import { Category } from "src/categories/entities/category.entity";
 import { Comment } from "src/comments/entities/comment.entity";
+import { Like } from "src/likes/entities/like.entity";
 import {
   Column,
   CreateDateColumn,
@@ -35,6 +36,9 @@ export class Product {
 
   @OneToMany(() => Comment, (comment: Comment) => comment.product)
   comments: Comment[];
+
+  @OneToMany(() => Like, (like: Like) => like.product)
+  likes: Like[];
 
   @CreateDateColumn()
   created_at: Date;

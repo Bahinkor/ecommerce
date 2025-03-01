@@ -6,10 +6,10 @@ import { AddressesModule } from "./addresses/addresses.module";
 import { AuthModule } from "./auth/auth.module";
 import { CategoriesModule } from "./categories/categories.module";
 import { CommentsModule } from "./comments/comments.module";
+import { LikesModule } from "./likes/likes.module";
 import { ProductsModule } from "./products/products.module";
 import { TicketsModule } from "./tickets/tickets.module";
 import { UsersModule } from "./users/users.module";
-import { LikesModule } from './likes/likes.module';
 
 @Module({
   imports: [

@@ -1,6 +1,7 @@
 import { IsNotEmpty, IsString, Length } from "class-validator";
 import { Address } from "src/addresses/entities/address.entity";
 import { Comment } from "src/comments/entities/comment.entity";
+import { Like } from "src/likes/entities/like.entity";
 import { Ticket } from "src/tickets/entities/ticket.entity";
 import {
   Column,
@@ -43,6 +44,9 @@ export class User {
 
   @OneToMany(() => Comment, (comment: Comment) => comment.user)
   comments: Comment[];
+
+  @OneToMany(() => Like, (like: Like) => like.user)
+  likes: Like[];
 
   @CreateDateColumn()
   created_at: Date;
