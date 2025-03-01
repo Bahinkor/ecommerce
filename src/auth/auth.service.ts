@@ -20,7 +20,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async register(registerDto: RegisterDto): Promise<User> {
+  async register(registerDto: RegisterDto): Promise<void> {
     try {
       const isUserExist = await this.userService.findOneByPhoneNumber(
         registerDto.phone_number,
@@ -31,7 +31,7 @@ export class AuthService {
 
       const hashedPassword: string = await bcrypt.hash(registerDto.password, 10);
 
-      return await this.userService.create({
+      await this.userService.create({
         ...registerDto,
         password: hashedPassword,
         role: UserRoleEnum.NormalUser,
