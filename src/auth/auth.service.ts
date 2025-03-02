@@ -53,6 +53,7 @@ export class AuthService {
       sub: user.id,
       phone_number: user.phone_number,
       display_name: user.display_name,
+      role: user.role,
     };
     const accessToken = this.jwtService.sign(payload);
 

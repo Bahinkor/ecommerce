@@ -1,4 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Post, UseGuards } from "@nestjs/common";
+import { AdminGuard } from "src/auth/admin/admin.guard";
 import { JwtAuthGuard } from "src/auth/jwt-guard/jwt-guard.guard";
 
 import { CreateLikeDto } from "./dto/create-like.dto";
@@ -16,6 +17,7 @@ export class LikesController {
 
   @Get()
   findAll() {
+    console.log();
     return this.likesService.findAll();
   }
 
