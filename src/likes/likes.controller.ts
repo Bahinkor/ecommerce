@@ -17,7 +17,6 @@ export class LikesController {
 
   @Get()
   findAll() {
-    console.log();
     return this.likesService.findAll();
   }
 
