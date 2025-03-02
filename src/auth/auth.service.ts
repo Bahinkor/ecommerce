@@ -6,7 +6,6 @@ import {
 } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
-import { User } from "src/users/entities/user.entity";
 import UserRoleEnum from "src/users/enums/userRole.enum";
 import { UsersService } from "src/users/users.service";
 

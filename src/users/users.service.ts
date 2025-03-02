@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import * as bcrypt from "bcrypt";
+import { log } from "node:console";
 import { Repository } from "typeorm";
 
 import { CreateUserDto } from "./dto/create-user.dto";
@@ -52,7 +53,11 @@ export class UsersService {
     phoneNumber: string,
     checkExist: boolean = false,
   ): Promise<User | null> {
-    const user = await this.userRepository.findOneBy({ phone_number: phoneNumber });
+    const user = await this.userRepository
+      .createQueryBuilder("user")
+      .addSelect("user.password")
+      .where("user.phone_number = :phoneNumber", { phoneNumber })
+      .getOne();
 
     if (!user && !checkExist) throw new NotFoundException(`User ${phoneNumber} not found`);
 
