@@ -1,5 +1,17 @@
-import { Body, Controller, Delete, Get, Param, Post, Req, UseGuards } from "@nestjs/common";
-import { Request } from "express";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  Param,
+  ParseIntPipe,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from "@nestjs/common";
+import { Request, Response } from "express";
 import { JwtAuthGuard } from "src/auth/jwt-guard/jwt-guard.guard";
 
 import { CreateLikeDto } from "./dto/create-like.dto";
@@ -11,17 +23,34 @@ export class LikesController {
   constructor(private readonly likesService: LikesService) {}
 
   @Post()
-  create(@Req() req: Request, @Body() createLikeDto: CreateLikeDto) {
-    return this.likesService.create(createLikeDto, req);
+  async create(@Req() req: Request, @Res() res: Response, @Body() createLikeDto: CreateLikeDto) {
+    const newLike = await this.likesService.create(createLikeDto, req);
+
+    return res.status(HttpStatus.CREATED).json({
+      data: newLike,
+      statusCode: HttpStatus.CREATED,
+      message: "Like created successfully",
+    });
   }
 
   @Get()
-  findAll() {
-    return this.likesService.findAll();
+  async findAll(@Res() res: Response, @Req() req: Request) {
+    const likes = await this.likesService.findAll(req);
+
+    return res.status(HttpStatus.OK).json({
+      data: likes,
+      statusCode: HttpStatus.OK,
+      message: "Likes fetched successfully",
+    });
   }
 
   @Delete(":id")
-  remove(@Param("id") id: string) {
-    return this.likesService.remove(+id);
+  async remove(@Res() res: Response, @Req() req: Request, @Param("id", ParseIntPipe) id: number) {
+    await this.likesService.remove(id, req);
+
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      message: "Like removed successfully",
+    });
   }
 }
