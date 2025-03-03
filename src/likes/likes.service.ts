@@ -1,22 +1,51 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Request } from "express";
+import { Like } from "src/likes/entities/like.entity";
+import { ProductsService } from "src/products/products.service";
+import { UsersService } from "src/users/users.service";
+import { Repository } from "typeorm";
 
 import { CreateLikeDto } from "./dto/create-like.dto";
 
 @Injectable()
 export class LikesService {
-  create(createLikeDto: CreateLikeDto) {
-    return "This action adds a new like";
+  constructor(
+    @InjectRepository(Like)
+    private readonly likeRepository: Repository<Like>,
+    // services
+    private readonly productsService: ProductsService,
+    private readonly usersService: UsersService,
+  ) {}
+
+  async create(createLikeDto: CreateLikeDto, req: Request): Promise<Like> {
+    const { product: productId } = createLikeDto;
+    const { userId } = req.user;
+
+    const product = await this.productsService.findOne(productId);
+    const user = await this.usersService.findOne(userId);
+
+    const newLike = this.likeRepository.create({ product, user });
+
+    return this.likeRepository.save(newLike);
   }
 
-  findAll() {
-    return `This action returns all likes`;
+  async findAll(req: Request): Promise<Like[]> {
+    const { userId } = req.user;
+
+    const query = this.likeRepository.createQueryBuilder("likes");
+
+    query.where("likes.user = :userId", { userId });
+
+    return query.getMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} like`;
-  }
+  async remove(id: number, req: Request): Promise<void> {
+    const { userId } = req.user;
+    const user = await this.usersService.findOne(userId);
 
-  remove(id: number) {
-    return `This action removes a #${id} like`;
+    const deleteResult = await this.likeRepository.delete({ id, user });
+
+    if (!deleteResult.affected) throw new NotFoundException(`Like id ${id} not found`);
   }
 }

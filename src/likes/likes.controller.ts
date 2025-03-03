@@ -1,5 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards } from "@nestjs/common";
-import { AdminGuard } from "src/auth/admin/admin.guard";
+import { Body, Controller, Delete, Get, Param, Post, Req, UseGuards } from "@nestjs/common";
+import { Request } from "express";
 import { JwtAuthGuard } from "src/auth/jwt-guard/jwt-guard.guard";
 
 import { CreateLikeDto } from "./dto/create-like.dto";
@@ -11,18 +11,13 @@ export class LikesController {
   constructor(private readonly likesService: LikesService) {}
 
   @Post()
-  create(@Body() createLikeDto: CreateLikeDto) {
-    return this.likesService.create(createLikeDto);
+  create(@Req() req: Request, @Body() createLikeDto: CreateLikeDto) {
+    return this.likesService.create(createLikeDto, req);
   }
 
   @Get()
   findAll() {
     return this.likesService.findAll();
-  }
-
-  @Get(":id")
-  findOne(@Param("id") id: string) {
-    return this.likesService.findOne(+id);
   }
 
   @Delete(":id")
