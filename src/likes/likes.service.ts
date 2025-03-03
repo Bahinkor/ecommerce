@@ -36,6 +36,7 @@ export class LikesService {
     const query = this.likeRepository.createQueryBuilder("likes");
 
     query.where("likes.user = :userId", { userId });
+    query.leftJoinAndSelect("likes.product", "product");
 
     return query.getMany();
   }
