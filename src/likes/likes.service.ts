@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request } from "express";
 import { Like } from "src/likes/entities/like.entity";
@@ -25,9 +25,16 @@ export class LikesService {
     const product = await this.productsService.findOne(productId);
     const user = await this.usersService.findOne(userId);
 
+    await this.existingLike(productId);
+
     const newLike = this.likeRepository.create({ product, user });
 
     return this.likeRepository.save(newLike);
+  }
+
+  async existingLike(id: number): Promise<void> {
+    const like = await this.likeRepository.findOne({ where: { id } });
+    if (like) throw new BadRequestException(`Like for product id ${id} already exists`);
   }
 
   async findAll(req: Request): Promise<Like[]> {
