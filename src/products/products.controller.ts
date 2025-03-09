@@ -8,9 +8,12 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Req,
   Res,
+  UseGuards,
 } from "@nestjs/common";
-import { Response } from "express";
+import { Request, Response } from "express";
+import { JwtAuthGuard } from "src/auth/jwt-guard/jwt-guard.guard";
 
 import { CreateProductDto } from "./dto/create-product.dto";
 import { UpdateProductDto } from "./dto/update-product.dto";
@@ -65,6 +68,22 @@ export class ProductsController {
       data: product,
       statusCode: HttpStatus.OK,
       message: "Product updated successfully",
+    });
+  }
+
+  @Post("add-basket/:productId")
+  @UseGuards(JwtAuthGuard)
+  async addBasket(
+    @Res() res: Response,
+    @Req() req: Request,
+    @Param("productId", ParseIntPipe) productId: number,
+  ) {
+    const basket = await this.productsService.addItemToBasket(productId, req);
+
+    return res.status(HttpStatus.OK).json({
+      data: basket,
+      statusCode: HttpStatus.OK,
+      message: "Product added to basket successfully",
     });
   }
 

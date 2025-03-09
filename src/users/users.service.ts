@@ -2,6 +2,7 @@ import { BadRequestException, Injectable, NotFoundException } from "@nestjs/comm
 import { InjectRepository } from "@nestjs/typeorm";
 import * as bcrypt from "bcrypt";
 import { log } from "node:console";
+import { Product } from "src/products/entities/product.entity";
 import { Repository } from "typeorm";
 
 import { CreateUserDto } from "./dto/create-user.dto";
@@ -42,7 +43,7 @@ export class UsersService {
   }
 
   async findOne(id: number): Promise<User> {
-    const user = await this.userRepository.findOneBy({ id });
+    const user = await this.userRepository.findOne({ where: { id }, relations: ["basket_items"] });
 
     if (!user) throw new NotFoundException(`User id ${id} not found`);
 
@@ -76,6 +77,14 @@ export class UsersService {
     } catch (e) {
       throw new BadRequestException(e.message);
     }
+  }
+
+  async addProductToBasket(userId: number, product: Product): Promise<User> {
+    const user: User = await this.findOne(userId);
+
+    user.basket_items.push(product);
+
+    return this.userRepository.save(user);
   }
 
   async remove(id: number): Promise<void> {

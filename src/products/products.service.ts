@@ -1,6 +1,9 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { Request } from "express";
 import { Category } from "src/categories/entities/category.entity";
+import { User } from "src/users/entities/user.entity";
+import { UsersService } from "src/users/users.service";
 import { In, Repository } from "typeorm";
 
 import { CreateProductDto } from "./dto/create-product.dto";
@@ -12,9 +15,10 @@ export class ProductsService {
   constructor(
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
-
     @InjectRepository(Category)
     private readonly categoryRepository: Repository<Category>,
+
+    private readonly usersService: UsersService,
   ) {}
 
   async create(createProductDto: CreateProductDto): Promise<Product> {
@@ -61,6 +65,13 @@ export class ProductsService {
     }
 
     return this.productRepository.save(product);
+  }
+
+  async addItemToBasket(productId: number, req: Request): Promise<User> {
+    const { userId } = req.user;
+    const product: Product = await this.findOne(productId);
+
+    return this.usersService.addProductToBasket(userId, product);
   }
 
   async remove(id: number): Promise<void> {
