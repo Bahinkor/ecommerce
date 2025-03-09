@@ -2,11 +2,14 @@ import { IsNotEmpty, IsString, Length } from "class-validator";
 import { Address } from "src/addresses/entities/address.entity";
 import { Comment } from "src/comments/entities/comment.entity";
 import { Like } from "src/likes/entities/like.entity";
+import { Product } from "src/products/entities/product.entity";
 import { Ticket } from "src/tickets/entities/ticket.entity";
 import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -47,6 +50,14 @@ export class User {
 
   @OneToMany(() => Like, (like: Like) => like.user)
   likes: Like[];
+
+  @ManyToMany(() => Product, (product: Product) => product.baskets)
+  @JoinTable({
+    name: "basket_items",
+    joinColumn: { name: "user_id", referencedColumnName: "id" },
+    inverseJoinColumn: { name: "product_id", referencedColumnName: "id" },
+  })
+  basket_items: Product[];
 
   @CreateDateColumn()
   created_at: Date;
