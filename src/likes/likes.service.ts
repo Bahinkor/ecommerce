@@ -1,12 +1,12 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request } from "express";
-import { Like } from "src/likes/entities/like.entity";
-import { ProductsService } from "src/products/products.service";
-import { UsersService } from "src/users/users.service";
 import { Repository } from "typeorm";
 
+import { ProductsService } from "../products/products.service";
+import { UsersService } from "../users/users.service";
 import { CreateLikeDto } from "./dto/create-like.dto";
+import { Like } from "./entities/like.entity";
 
 @Injectable()
 export class LikesService {

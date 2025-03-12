@@ -1,9 +1,9 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { Like } from "src/likes/entities/like.entity";
-import { ProductsModule } from "src/products/products.module";
-import { UsersModule } from "src/users/users.module";
 
+import { ProductsModule } from "../products/products.module";
+import { UsersModule } from "../users/users.module";
+import { Like } from "./entities/like.entity";
 import { LikesController } from "./likes.controller";
 import { LikesService } from "./likes.service";
 

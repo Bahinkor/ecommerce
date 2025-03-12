@@ -1,8 +1,8 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { UsersService } from "src/users/users.service";
 import { Repository } from "typeorm";
 
+import { UsersService } from "../users/users.service";
 import { CreateTicketDto } from "./dto/create-ticket.dto";
 import { Ticket } from "./entities/ticket.entity";
 

@@ -1,8 +1,4 @@
 import { MaxLength, Min } from "class-validator";
-import { Category } from "src/categories/entities/category.entity";
-import { Comment } from "src/comments/entities/comment.entity";
-import { Like } from "src/likes/entities/like.entity";
-import { User } from "src/users/entities/user.entity";
 import {
   Column,
   CreateDateColumn,
@@ -13,6 +9,11 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
+
+import { Category } from "../../categories/entities/category.entity";
+import { Comment } from "../../comments/entities/comment.entity";
+import { Like } from "../../likes/entities/like.entity";
+import { User } from "../../users/entities/user.entity";
 
 @Entity("products")
 export class Product {

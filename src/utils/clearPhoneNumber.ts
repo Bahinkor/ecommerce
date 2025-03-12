@@ -1,4 +1,4 @@
-import type { Comment } from "src/comments/entities/comment.entity";
+import type { Comment } from "../comments/entities/comment.entity";
 
 const clearPhoneNumber = (comments: Comment[]): void => {
   comments.forEach((comment: Comment) => {

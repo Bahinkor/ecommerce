@@ -13,8 +13,8 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { Request, Response } from "express";
-import { JwtAuthGuard } from "src/auth/jwt-guard/jwt-guard.guard";
 
+import { JwtAuthGuard } from "../auth/jwt-guard/jwt-guard.guard";
 import { CreateProductDto } from "./dto/create-product.dto";
 import { UpdateProductDto } from "./dto/update-product.dto";
 import { ProductsService } from "./products.service";

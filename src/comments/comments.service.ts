@@ -1,11 +1,10 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Product } from "src/products/entities/product.entity";
-import { ProductsService } from "src/products/products.service";
-import { UsersService } from "src/users/users.service";
-import { clearPhoneNumber } from "src/utils/clearPhoneNumber";
-import { IsNull, Repository } from "typeorm";
+import { Repository } from "typeorm";
 
+import { ProductsService } from "../products/products.service";
+import { UsersService } from "../users/users.service";
+import { clearPhoneNumber } from "../utils/clearPhoneNumber";
 import { CreateCommentDto } from "./dto/create-comment.dto";
 import { Comment } from "./entities/comment.entity";
 

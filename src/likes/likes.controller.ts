@@ -12,8 +12,8 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { Request, Response } from "express";
-import { JwtAuthGuard } from "src/auth/jwt-guard/jwt-guard.guard";
 
+import { JwtAuthGuard } from "../auth/jwt-guard/jwt-guard.guard";
 import { CreateLikeDto } from "./dto/create-like.dto";
 import { LikesService } from "./likes.service";
 
