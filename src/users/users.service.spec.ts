@@ -31,6 +31,7 @@ describe("UsersService", () => {
     findOne: jest.fn(),
     findOneByPhoneNumber: jest.fn(),
     save: jest.fn(),
+    update: jest.fn(),
     remove: jest.fn(),
     createQueryBuilder: jest.fn(() => mockQueryBuilder),
   };
@@ -101,7 +102,7 @@ describe("UsersService", () => {
     expect(result).toEqual(foundUser);
   });
 
-  it("should return nNotFoundException when UserService.findOne is called with an invalid ID", async () => {
+  it("should return NotFoundException when UserService.findOne is called with an invalid ID", async () => {
     const invalidId: number = 999;
 
     mockUserRepository.findOne.mockResolvedValue(NotFoundException);
@@ -120,12 +121,28 @@ describe("UsersService", () => {
     expect(result).toEqual(foundUser);
   });
 
-  it("should return null NotFoundException UserService.findOneByPhoneNumber is called with an invalid phone number", async () => {
+  it("should return NotFoundException UserService.findOneByPhoneNumber is called with an invalid phone number", async () => {
     const invalidPhoneNumber: string = "09113450000";
 
     mockUserRepository.createQueryBuilder().where().getOne.mockResolvedValue(NotFoundException);
 
     const result = await usersService.findOneByPhoneNumber(invalidPhoneNumber);
     expect(result).toEqual(NotFoundException);
+  });
+
+  it("should return updated user UserService.update is called with a valid ID", async () => {
+    const userId: number = 1;
+    const updateData = { display_name: "New Name", role: UserRoleEnum.NormalUser };
+
+    const exitingUser: User = new User();
+    exitingUser.id = userId;
+    exitingUser.display_name = "Old Name";
+    exitingUser.role = UserRoleEnum.NormalUser;
+
+    mockUserRepository.findOne.mockResolvedValueOnce(exitingUser);
+    mockUserRepository.update.mockResolvedValue({ affected: 1 });
+
+    const result = await usersService.update(userId, updateData);
+    expect(result).toEqual(expect.objectContaining({ affected: 1 }));
   });
 });
