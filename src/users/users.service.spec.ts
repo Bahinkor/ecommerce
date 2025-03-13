@@ -1,9 +1,7 @@
 import type { TestingModule } from "@nestjs/testing";
-import type { Repository } from "typeorm";
 
 import { NotFoundException } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
-import { mock } from "node:test";
 
 import type { CreateUserDto } from "./dto/create-user.dto";
 
@@ -33,6 +31,7 @@ describe("UsersService", () => {
     save: jest.fn(),
     update: jest.fn(),
     remove: jest.fn(),
+    delete: jest.fn(),
     createQueryBuilder: jest.fn(() => mockQueryBuilder),
   };
 
@@ -144,5 +143,14 @@ describe("UsersService", () => {
 
     const result = await usersService.update(userId, updateData);
     expect(result).toEqual(expect.objectContaining({ affected: 1 }));
+  });
+
+  it("should delete a user when a valid ID is provided", async () => {
+    const userId: number = 1;
+
+    mockUserRepository.delete.mockResolvedValue({ affected: 1 });
+
+    const result = await usersService.remove(userId);
+    expect(result).toBeUndefined();
   });
 });
