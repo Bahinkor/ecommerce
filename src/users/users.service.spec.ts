@@ -1,6 +1,7 @@
 import type { TestingModule } from "@nestjs/testing";
 import type { Repository } from "typeorm";
 
+import { NotFoundException } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
 import { mock } from "node:test";
 
@@ -21,12 +22,14 @@ describe("UsersService", () => {
     skip: jest.fn().mockReturnThis(),
     take: jest.fn().mockReturnThis(),
     getMany: jest.fn().mockResolvedValue([User]),
+    getOne: jest.fn().mockResolvedValue(User),
   };
 
   const mockUserRepository = {
     create: jest.fn(),
     find: jest.fn(),
     findOne: jest.fn(),
+    findOneByPhoneNumber: jest.fn(),
     save: jest.fn(),
     remove: jest.fn(),
     createQueryBuilder: jest.fn(() => mockQueryBuilder),
@@ -86,5 +89,43 @@ describe("UsersService", () => {
 
     jest.spyOn(usersService, "findAll").mockResolvedValue(result);
     await expect(usersService.findAll()).resolves.toEqual(result);
+  });
+
+  it("should return a user when UserService.findOne is called with a valid ID", async () => {
+    const userId: number = 1;
+    const foundUser: User = new User();
+
+    mockUserRepository.findOne.mockResolvedValue(foundUser);
+
+    const result = await usersService.findOne(userId);
+    expect(result).toEqual(foundUser);
+  });
+
+  it("should return nNotFoundException when UserService.findOne is called with an invalid ID", async () => {
+    const invalidId: number = 999;
+
+    mockUserRepository.findOne.mockResolvedValue(NotFoundException);
+
+    const result = await usersService.findOne(invalidId);
+    expect(result).toEqual(NotFoundException);
+  });
+
+  it("should return a user when UserService.findOneByPhoneNumber is called with a valid phone number", async () => {
+    const userPhoneNumber: string = "09113456789";
+    const foundUser: User = new User();
+
+    mockUserRepository.createQueryBuilder().where().getOne.mockResolvedValue(foundUser);
+    const result = await usersService.findOneByPhoneNumber(userPhoneNumber);
+
+    expect(result).toEqual(foundUser);
+  });
+
+  it("should return null NotFoundException UserService.findOneByPhoneNumber is called with an invalid phone number", async () => {
+    const invalidPhoneNumber: string = "09113450000";
+
+    mockUserRepository.createQueryBuilder().where().getOne.mockResolvedValue(NotFoundException);
+
+    const result = await usersService.findOneByPhoneNumber(invalidPhoneNumber);
+    expect(result).toEqual(NotFoundException);
   });
 });
