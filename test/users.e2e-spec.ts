@@ -1,6 +1,5 @@
 import type { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
-import type { QueryRunner } from "typeorm";
 
 import { HttpStatus } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
@@ -16,6 +15,7 @@ import UserRoleEnum from "../src/users/enums/userRole.enum";
 describe("users resource e2e test", () => {
   let app: INestApplication;
   let dataSource: DataSource;
+  let createdUserId: number;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -26,17 +26,9 @@ describe("users resource e2e test", () => {
     await app.init();
 
     dataSource = moduleFixture.get<DataSource>(DataSource);
-  });
 
-  beforeEach(async () => {
-    const queryRunner: QueryRunner = dataSource.createQueryRunner();
-
-    await queryRunner.connect();
-    await queryRunner.query("SET FOREIGN_KEY_CHECKS=0;"); // Disable foreign key checks to allow truncation
-    await queryRunner.query("TRUNCATE TABLE users;"); // Remove all records from the users table
-    await queryRunner.query("SET FOREIGN_KEY_CHECKS=1;"); // Re-enable foreign key checks after truncation
-
-    await queryRunner.release();
+    // clear the database (users table) before each test
+    await dataSource.getRepository(User).delete({});
   });
 
   afterAll(async () => {
@@ -56,11 +48,21 @@ describe("users resource e2e test", () => {
       .expect(HttpStatus.CREATED);
 
     expect(response.body).toMatchObject(new User());
+
+    createdUserId = response.body.data.id;
   });
 
   it("should return all users", async () => {
     const response = await request(app.getHttpServer()).get("/users").expect(HttpStatus.OK);
 
-    expect(response.body).toMatchObject(new User());
+    expect(response.body.data).toMatchObject([new User()]);
+  });
+
+  it("should return a user by id", async () => {
+    const response = await request(app.getHttpServer())
+      .get(`/users/${createdUserId}`)
+      .expect(HttpStatus.OK);
+
+    expect(response.body.data).toMatchObject(new User());
   });
 });
