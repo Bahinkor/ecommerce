@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import * as dotenv from "dotenv";
 
 import { AddressesModule } from "./addresses/addresses.module";
 import { AuthModule } from "./auth/auth.module";
@@ -10,6 +11,12 @@ import { LikesModule } from "./likes/likes.module";
 import { ProductsModule } from "./products/products.module";
 import { TicketsModule } from "./tickets/tickets.module";
 import { UsersModule } from "./users/users.module";
+
+if (process.env.NODE_ENV === "test") {
+  dotenv.config({ path: ".env.test" });
+} else {
+  dotenv.config({ path: ".env" });
+}
 
 @Module({
   imports: [
