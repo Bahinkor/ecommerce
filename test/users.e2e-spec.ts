@@ -10,7 +10,7 @@ import type { CreateUserDto } from "../src/users/dto/create-user.dto";
 
 import { AppModule } from "../src/app.module";
 import { User } from "../src/users/entities/user.entity";
-import UserRoleEnum from "../src/users/enums/userRole.enum";
+import UserRoleEnum from "../src/users/enums/user-role.enum";
 
 describe("users resource e2e test", () => {
   let app: INestApplication;

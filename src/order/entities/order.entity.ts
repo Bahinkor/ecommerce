@@ -9,7 +9,7 @@ import {
 
 import { Address } from "../../addresses/entities/address.entity";
 import { User } from "../../users/entities/user.entity";
-import { OrderStatusEnum } from "../enums/orderStatus.enum";
+import { OrderStatusEnum } from "../enums/order-status.enum";
 
 @Entity("order")
 export class Order {
@@ -30,6 +30,9 @@ export class Order {
 
   @Column({ type: "enum", enum: OrderStatusEnum, default: OrderStatusEnum.PENDING })
   status: OrderStatusEnum;
+
+  @Column()
+  payed_time: Date;
 
   @CreateDateColumn()
   created_at: Date;

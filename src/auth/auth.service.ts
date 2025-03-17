@@ -7,7 +7,7 @@ import {
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
 
-import UserRoleEnum from "../users/enums/userRole.enum";
+import UserRoleEnum from "../users/enums/user-role.enum";
 import { UsersService } from "../users/users.service";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";

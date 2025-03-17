@@ -16,7 +16,7 @@ import { Comment } from "../../comments/entities/comment.entity";
 import { Like } from "../../likes/entities/like.entity";
 import { Product } from "../../products/entities/product.entity";
 import { Ticket } from "../../tickets/entities/ticket.entity";
-import UserRoleEnum from "../enums/userRole.enum";
+import UserRoleEnum from "../enums/user-role.enum";
 
 @Entity({ name: "users" })
 export class User {

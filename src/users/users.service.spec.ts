@@ -6,7 +6,7 @@ import { Test } from "@nestjs/testing";
 import type { CreateUserDto } from "./dto/create-user.dto";
 
 import { User } from "./entities/user.entity";
-import UserRoleEnum from "./enums/userRole.enum";
+import UserRoleEnum from "./enums/user-role.enum";
 import { UsersController } from "./users.controller";
 import { UsersService } from "./users.service";
 

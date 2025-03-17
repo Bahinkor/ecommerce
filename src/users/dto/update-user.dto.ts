@@ -1,6 +1,6 @@
 import { IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength } from "class-validator";
 
-import UserRoleEnum from "../enums/userRole.enum";
+import UserRoleEnum from "../enums/user-role.enum";
 
 export class UpdateUserDto {
   @IsString()
