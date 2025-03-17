@@ -3,6 +3,7 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
@@ -10,6 +11,7 @@ import {
 import { Address } from "../../addresses/entities/address.entity";
 import { User } from "../../users/entities/user.entity";
 import { OrderStatusEnum } from "../enums/order-status.enum";
+import { OrderItem } from "./order-item.entity";
 
 @Entity("order")
 export class Order {
@@ -21,6 +23,9 @@ export class Order {
 
   @ManyToOne(() => Address, (address: Address) => address.orders)
   address: Address;
+
+  @OneToMany(() => OrderItem, (orderItem: OrderItem) => orderItem.order)
+  items: OrderItem[];
 
   @Column({ type: "bigint" })
   total_price: number;
