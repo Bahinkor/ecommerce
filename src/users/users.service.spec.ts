@@ -70,6 +70,7 @@ describe("UsersService", () => {
       comments: [],
       likes: [],
       tickets: [],
+      orders: [],
     };
 
     mockUserRepository.create.mockReturnValue(savedUser);

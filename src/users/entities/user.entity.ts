@@ -1,4 +1,5 @@
 import { IsNotEmpty, IsString, Length } from "class-validator";
+import { Order } from "src/order/entities/order.entity";
 import {
   Column,
   CreateDateColumn,
@@ -50,6 +51,9 @@ export class User {
 
   @OneToMany(() => Like, (like: Like) => like.user)
   likes: Like[];
+
+  @OneToMany(() => Order, (order: Order) => order.user)
+  orders: Order[];
 
   @ManyToMany(() => Product, (product: Product) => product.baskets)
   @JoinTable({

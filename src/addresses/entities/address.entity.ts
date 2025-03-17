@@ -1,9 +1,11 @@
 import { IsNotEmpty, IsString, Length } from "class-validator";
+import { Order } from "src/order/entities/order.entity";
 import {
   Column,
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
@@ -47,6 +49,9 @@ export class Address {
 
   @ManyToOne(() => User, (user: User) => user.addresses)
   user: User;
+
+  @OneToMany(() => Order, (order: Order) => order.address)
+  orders: Order[];
 
   @CreateDateColumn()
   created_at: Date;

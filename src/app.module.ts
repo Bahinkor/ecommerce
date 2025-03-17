@@ -11,6 +11,7 @@ import { LikesModule } from "./likes/likes.module";
 import { ProductsModule } from "./products/products.module";
 import { TicketsModule } from "./tickets/tickets.module";
 import { UsersModule } from "./users/users.module";
+import { OrderModule } from './order/order.module';
 
 if (process.env.NODE_ENV === "test") {
   dotenv.config({ path: ".env.test" });
@@ -46,6 +47,7 @@ if (process.env.NODE_ENV === "test") {
     CategoriesModule,
     CommentsModule,
     LikesModule,
+    OrderModule,
   ],
 })
 export class AppModule {}
