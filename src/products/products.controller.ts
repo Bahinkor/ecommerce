@@ -78,10 +78,24 @@ export class ProductsController {
     @Req() req: Request,
     @Param("productId", ParseIntPipe) productId: number,
   ) {
-    const basket = await this.productsService.addItemToBasket(productId, req);
+    await this.productsService.addItemToBasket(productId, req);
 
     return res.status(HttpStatus.OK).json({
-      data: basket,
+      statusCode: HttpStatus.OK,
+      message: "Product added to basket successfully",
+    });
+  }
+
+  @Delete("remove-basket/:productId")
+  @UseGuards(JwtAuthGuard)
+  async removeBasket(
+    @Res() res: Response,
+    @Req() req: Request,
+    @Param("productId", ParseIntPipe) productId: number,
+  ) {
+    await this.productsService.removeItemFromBasket(productId, req);
+
+    return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       message: "Product added to basket successfully",
     });

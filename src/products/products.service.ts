@@ -17,6 +17,8 @@ export class ProductsService {
     private readonly productRepository: Repository<Product>,
     @InjectRepository(Category)
     private readonly categoryRepository: Repository<Category>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
 
     private readonly usersService: UsersService,
   ) {}
@@ -67,11 +69,24 @@ export class ProductsService {
     return this.productRepository.save(product);
   }
 
-  async addItemToBasket(productId: number, req: Request): Promise<User> {
+  async addItemToBasket(productId: number, req: Request): Promise<void> {
     const { userId } = req.user;
     const product: Product = await this.findOne(productId);
 
-    return this.usersService.addProductToBasket(userId, product);
+    await this.usersService.addProductToBasket(userId, product);
+  }
+
+  async removeItemFromBasket(productId: number, req: Request): Promise<void> {
+    const { userId } = req.user;
+    const user: User = await this.usersService.findOne(userId);
+
+    const productIndex = user.basket_items.findIndex((item) => item.id === productId);
+
+    if (productIndex === -1) throw new NotFoundException(`Product id ${productId} not found`);
+
+    user.basket_items.splice(productIndex, 1);
+
+    await this.userRepository.save(user);
   }
 
   async remove(id: number): Promise<void> {
