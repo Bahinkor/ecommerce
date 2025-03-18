@@ -31,7 +31,7 @@ export class Order {
   total_price: number;
 
   @Column({ type: "bigint", nullable: true })
-  discount_code: number;
+  discount_code: string;
 
   @Column({ type: "enum", enum: OrderStatusEnum, default: OrderStatusEnum.PENDING })
   status: OrderStatusEnum;

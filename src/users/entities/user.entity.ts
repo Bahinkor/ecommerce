@@ -34,7 +34,7 @@ export class User {
   @Length(11, 11)
   phone_number?: string;
 
-  @Column({ nullable: true, select: false })
+  @Column()
   password: string;
 
   @Column({ type: "enum", enum: UserRoleEnum, default: UserRoleEnum.NormalUser })

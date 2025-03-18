@@ -1,6 +1,7 @@
 import { Type } from "class-transformer";
 import { IsArray, IsNumber, IsOptional, IsString, ValidateNested } from "class-validator";
 
+import { OrderItem } from "../entities/order-item.entity";
 import { CreateOrderItem } from "./create-order-item.dto";
 
 export class CreateOrderDto {
@@ -14,5 +15,5 @@ export class CreateOrderDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateOrderItem)
-  items: CreateOrderItem[];
+  items: OrderItem[];
 }
