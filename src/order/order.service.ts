@@ -33,7 +33,6 @@ export class OrderService {
     const order = this.orderRepository.create({
       user,
       address,
-      total_price: 100,
       discount_code: discountCode,
       status: OrderStatusEnum.PENDING,
       payed_time: new Date(),
@@ -41,19 +40,23 @@ export class OrderService {
 
     const savedOrder = await this.orderRepository.save(order);
 
+    let totalPrice = 0;
     if (orderItems.length > 0) {
       const orderItemsEntities = await Promise.all(
         orderItems.map(async (item) => {
           const product = await this.productsService.findOne(item.productId);
           const orderItem = this.orderItemRepository.create({ order: savedOrder, product });
+          totalPrice += product.price;
           return this.orderItemRepository.save(orderItem);
         }),
       );
     }
 
+    await this.orderRepository.update({ id: savedOrder.id }, { total_price: totalPrice });
+
     const finalOrder = await this.orderRepository.findOne({
       where: { id: savedOrder.id },
-      relations: ["items"],
+      relations: ["items.product"],
     });
 
     if (!finalOrder) throw new NotFoundException("Order not found");
