@@ -1,36 +1,61 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Req } from "@nestjs/common";
-import { Request } from "express";
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Param,
+  ParseIntPipe,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from "@nestjs/common";
+import { Request, Response } from "express";
+import { AdminGuard } from "src/auth/admin/admin.guard";
+import { JwtAuthGuard } from "src/auth/jwt-guard/jwt-guard.guard";
+import { Order } from "src/order/entities/order.entity";
 
 import { CreateOrderDto } from "./dto/create-order.dto";
-import { UpdateOrderDto } from "./dto/update-order.dto";
 import { OrderService } from "./order.service";
 
 @Controller("order")
+@UseGuards(JwtAuthGuard)
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
   @Post()
-  create(@Req() req: Request, @Body() createOrderDto: CreateOrderDto) {
-    return this.orderService.create(createOrderDto, req);
+  async create(@Req() req: Request, @Res() res: Response, @Body() createOrderDto: CreateOrderDto) {
+    const { userId } = req.user;
+    const order: Order = await this.orderService.create(createOrderDto, userId);
+
+    return res.status(HttpStatus.CREATED).json({
+      data: order,
+      statusCode: HttpStatus.CREATED,
+      message: "Order created successfully",
+    });
   }
 
   @Get()
-  findAll() {
-    return this.orderService.findAll();
+  @UseGuards(AdminGuard)
+  async findAll(@Res() res: Response) {
+    const orders: Order[] = await this.orderService.findAll();
+
+    return res.status(HttpStatus.OK).json({
+      data: orders,
+      statusCode: HttpStatus.OK,
+      message: "Orders fetched successfully",
+    });
   }
 
   @Get(":id")
-  findOne(@Param("id") id: string) {
-    return this.orderService.findOne(+id);
-  }
+  async findOne(@Req() req: Request, @Res() res: Response, @Param("id", ParseIntPipe) id: number) {
+    const { userId } = req.user;
+    const order: Order = await this.orderService.findOne(id, userId);
 
-  @Patch(":id")
-  update(@Param("id") id: string, @Body() updateOrderDto: UpdateOrderDto) {
-    return this.orderService.update(+id, updateOrderDto);
-  }
-
-  @Delete(":id")
-  remove(@Param("id") id: string) {
-    return this.orderService.remove(+id);
+    return res.status(HttpStatus.OK).json({
+      data: order,
+      statusCode: HttpStatus.OK,
+      message: "Order fetched successfully",
+    });
   }
 }

@@ -26,8 +26,7 @@ export class OrderService {
     private readonly productsService: ProductsService,
   ) {}
 
-  async create(createOrderDto: CreateOrderDto, req: Request): Promise<Order> {
-    const { userId } = req.user;
+  async create(createOrderDto: CreateOrderDto, userId: number): Promise<Order> {
     const user: User = await this.usersService.findOne(userId);
 
     const { addressId, discountCode, items: orderItems } = createOrderDto;
@@ -64,9 +63,10 @@ export class OrderService {
     return this.orderRepository.find({ relations: ["user"] });
   }
 
-  async findOne(id: number): Promise<Order> {
+  async findOne(id: number, userId: number): Promise<Order> {
+    const user = await this.usersService.findOne(userId);
     const order = await this.orderRepository.findOne({
-      where: { id },
+      where: { id, user },
       relations: ["user", "address", "items"],
     });
 
