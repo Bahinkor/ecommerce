@@ -30,13 +30,13 @@ export class Order {
   @Column({ type: "bigint" })
   total_price: number;
 
-  @Column({ type: "bigint", nullable: true })
+  @Column({ type: "varchar", nullable: true })
   discount_code: string;
 
   @Column({ type: "enum", enum: OrderStatusEnum, default: OrderStatusEnum.PENDING })
   status: OrderStatusEnum;
 
-  @Column()
+  @Column({ type: "timestamp" })
   payed_time: Date;
 
   @CreateDateColumn()
