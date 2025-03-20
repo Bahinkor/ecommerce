@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Request } from "express";
 import { Repository } from "typeorm";
@@ -60,19 +60,18 @@ export class OrderService {
     return savedOrder;
   }
 
-  findAll() {
-    return `This action returns all order`;
+  async findAll(): Promise<Order[]> {
+    return this.orderRepository.find({ relations: ["user"] });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} order`;
-  }
+  async findOne(id: number): Promise<Order> {
+    const order = await this.orderRepository.findOne({
+      where: { id },
+      relations: ["user", "address", "items"],
+    });
 
-  update(id: number, updateOrderDto: UpdateOrderDto) {
-    return `This action updates a #${id} order`;
-  }
+    if (!order) throw new NotFoundException("Order not found");
 
-  remove(id: number) {
-    return `This action removes a #${id} order`;
+    return order;
   }
 }
