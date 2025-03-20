@@ -28,11 +28,8 @@ export class AuthService {
 
       if (isUserExist) throw new BadRequestException("User already exists");
 
-      const hashedPassword: string = await bcrypt.hash(registerDto.password, 10);
-
       await this.userService.create({
         ...registerDto,
-        password: hashedPassword,
         role: UserRoleEnum.NormalUser,
       });
     } catch (e) {
