@@ -1,13 +1,16 @@
-import { Module } from "@nestjs/common";
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { ThrottlerModule } from "@nestjs/throttler";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import * as dotenv from "dotenv";
+import { WinstonModule } from "nest-winston";
+import * as winston from "winston";
 
 import { AddressesModule } from "./addresses/addresses.module";
 import { AuthModule } from "./auth/auth.module";
 import { CategoriesModule } from "./categories/categories.module";
 import { CommentsModule } from "./comments/comments.module";
+import { LoggerMiddleware } from "./common/middleware/logger.middleware";
 import { LikesModule } from "./likes/likes.module";
 import { OrderModule } from "./order/order.module";
 import { ProductsModule } from "./products/products.module";
@@ -49,6 +52,15 @@ if (process.env.NODE_ENV === "test") {
       synchronize: true,
     }),
 
+    // logger configuration
+    WinstonModule.forRoot({
+      transports: [
+        new winston.transports.Console({
+          format: winston.format.simple(),
+        }),
+      ],
+    }),
+
     // modules
     UsersModule,
     AuthModule,
@@ -61,4 +73,8 @@ if (process.env.NODE_ENV === "test") {
     OrderModule,
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes({ path: "*", method: RequestMethod.ALL });
+  }
+}
