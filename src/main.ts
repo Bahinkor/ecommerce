@@ -3,24 +3,15 @@ import type { NestExpressApplication } from "@nestjs/platform-express";
 import { ValidationPipe, VersioningType } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { WinstonModule } from "nest-winston";
-import * as winston from "winston";
 
 import { AppModule } from "./app.module";
+import { customLevels, winstonTransports } from "./common/logger/logger.config";
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: WinstonModule.createLogger({
-      transports: [
-        new winston.transports.Console({
-          format: winston.format.combine(
-            winston.format.timestamp(),
-            winston.format.colorize(),
-            winston.format.printf(({ level, message, timestamp }) => {
-              return `[${timestamp}] ${level}: ${message}`;
-            }),
-          ),
-        }),
-      ],
+      levels: customLevels.levels,
+      transports: winstonTransports,
     }),
   });
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
