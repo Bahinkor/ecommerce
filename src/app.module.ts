@@ -1,5 +1,6 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
+import { ThrottlerModule } from "@nestjs/throttler";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import * as dotenv from "dotenv";
 
@@ -8,10 +9,10 @@ import { AuthModule } from "./auth/auth.module";
 import { CategoriesModule } from "./categories/categories.module";
 import { CommentsModule } from "./comments/comments.module";
 import { LikesModule } from "./likes/likes.module";
+import { OrderModule } from "./order/order.module";
 import { ProductsModule } from "./products/products.module";
 import { TicketsModule } from "./tickets/tickets.module";
 import { UsersModule } from "./users/users.module";
-import { OrderModule } from './order/order.module';
 
 if (process.env.NODE_ENV === "test") {
   dotenv.config({ path: ".env.test" });
@@ -24,6 +25,16 @@ if (process.env.NODE_ENV === "test") {
     // configuration
     ConfigModule.forRoot({
       isGlobal: true,
+    }),
+
+    // rate limiter
+    ThrottlerModule.forRoot({
+      throttlers: [
+        {
+          ttl: 60,
+          limit: 10,
+        },
+      ],
     }),
 
     // database connection
