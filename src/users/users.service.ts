@@ -17,14 +17,10 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    try {
-      const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-      const newUser = this.userRepository.create({ ...createUserDto, password: hashedPassword });
+    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+    const newUser = this.userRepository.create({ ...createUserDto, password: hashedPassword });
 
-      return await this.userRepository.save(newUser);
-    } catch (e) {
-      throw new BadRequestException(e.message);
-    }
+    return this.userRepository.save(newUser);
   }
 
   findAll(role?: UserRoleEnum, limit: number = 10, page: number = 1): Promise<User[]> {
@@ -44,7 +40,7 @@ export class UsersService {
   async findOne(id: number): Promise<User> {
     const user = await this.userRepository.findOne({
       where: { id },
-      relations: ["basket_items"],
+      relations: ["basket_items", "addresses", "orders"],
       select: { password: false },
     });
 
@@ -69,15 +65,11 @@ export class UsersService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto): Promise<object> {
-    try {
-      const user = await this.findOne(id);
+    const user = await this.findOne(id);
 
-      if (!user) throw new NotFoundException(`User id ${id} not found`);
+    if (!user) throw new NotFoundException(`User id ${id} not found`);
 
-      return await this.userRepository.update({ id }, updateUserDto);
-    } catch (e) {
-      throw new BadRequestException(e.message);
-    }
+    return this.userRepository.update({ id }, updateUserDto);
   }
 
   async addProductToBasket(userId: number, product: Product): Promise<User> {
