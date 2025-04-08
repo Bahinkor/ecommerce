@@ -9,7 +9,7 @@ import {
   MaxLength,
 } from "class-validator";
 
-import UserRoleEnum from "../enums/user-role.enum";
+import { UserRoleEnum } from "../enums/user-role.enum";
 
 export class CreateUserDto {
   @IsString()

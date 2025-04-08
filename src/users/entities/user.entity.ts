@@ -16,7 +16,7 @@ import { Comment } from "../../comments/entities/comment.entity";
 import { Like } from "../../likes/entities/like.entity";
 import { Product } from "../../products/entities/product.entity";
 import { Ticket } from "../../tickets/entities/ticket.entity";
-import UserRoleEnum from "../enums/user-role.enum";
+import { UserRoleEnum } from "../enums/user-role.enum";
 
 @Entity({ name: "users" })
 export class User {
@@ -24,14 +24,9 @@ export class User {
   id: number;
 
   @Column({ length: 35 })
-  @IsString()
-  @IsNotEmpty()
-  @Length(1, 35)
   display_name: string;
 
   @Column({ unique: true, length: 11 })
-  @IsString()
-  @Length(11, 11)
   phone_number?: string;
 
   @Column({ type: "varchar", select: false })

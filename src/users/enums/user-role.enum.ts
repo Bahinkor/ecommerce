@@ -3,4 +3,4 @@ enum UserRoleEnum {
   AdminUser = "admin",
 }
 
-export default UserRoleEnum;
+export { UserRoleEnum };
