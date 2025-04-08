@@ -10,15 +10,19 @@ import {
   Put,
   Query,
   Res,
+  UseGuards,
 } from "@nestjs/common";
 import { Response } from "express";
 
+import { AdminGuard } from "../auth/admin/admin.guard";
+import { JwtAuthGuard } from "../auth/jwt-guard/jwt-guard.guard";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { UserRoleEnum } from "./enums/user-role.enum";
 import { UsersService } from "./users.service";
 
-@Controller("users")
+@Controller({ path: "users", version: "1" })
+@UseGuards(JwtAuthGuard, AdminGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
