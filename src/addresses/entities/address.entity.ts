@@ -1,5 +1,3 @@
-import { IsNotEmpty, IsString, Length } from "class-validator";
-import { Order } from "src/order/entities/order.entity";
 import {
   Column,
   CreateDateColumn,
@@ -10,6 +8,7 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 
+import { Order } from "../../order/entities/order.entity";
 import { User } from "../../users/entities/user.entity";
 
 @Entity({ name: "addresses" })
@@ -18,30 +17,18 @@ export class Address {
   id: number;
 
   @Column()
-  @IsString()
-  @IsNotEmpty()
   province: string;
 
   @Column()
-  @IsString()
-  @IsNotEmpty()
   city: string;
 
   @Column()
-  @IsString()
-  @IsNotEmpty()
   address: string;
 
   @Column({ length: 10 })
-  @IsString()
-  @IsNotEmpty()
-  @Length(10, 10)
   postal_code: string;
 
   @Column({ length: 11 })
-  @IsString()
-  @IsNotEmpty()
-  @Length(11, 11)
   receiver_phone_number: string;
 
   @Column({ nullable: true })

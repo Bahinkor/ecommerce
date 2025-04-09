@@ -1,5 +1,3 @@
-import { IsNotEmpty, IsString, Length } from "class-validator";
-import { Order } from "src/order/entities/order.entity";
 import {
   Column,
   CreateDateColumn,
@@ -14,6 +12,7 @@ import {
 import { Address } from "../../addresses/entities/address.entity";
 import { Comment } from "../../comments/entities/comment.entity";
 import { Like } from "../../likes/entities/like.entity";
+import { Order } from "../../order/entities/order.entity";
 import { Product } from "../../products/entities/product.entity";
 import { Ticket } from "../../tickets/entities/ticket.entity";
 import { UserRoleEnum } from "../enums/user-role.enum";
