@@ -85,4 +85,22 @@ export class UsersService {
 
     if (!deleteResult.affected) throw new NotFoundException(`User id ${id} not found`);
   }
+
+  async findOneWithPassword(id: number): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      select: { password: true },
+    });
+
+    if (!user) throw new NotFoundException(`User id ${id} not found`);
+
+    return user;
+  }
+
+  async forgetPassword(userId: number, hashedPassword: string): Promise<void> {
+    const user = await this.findOne(userId);
+    user.password = hashedPassword;
+
+    await this.userRepository.save(user);
+  }
 }

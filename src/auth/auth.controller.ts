@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   HttpStatus,
+  Patch,
   Post,
   Req,
   Res,
@@ -12,6 +13,7 @@ import {
 import { Request, Response } from "express";
 
 import { AuthService } from "./auth.service";
+import { ForgetPasswordDto } from "./dto/forget-password.dto";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
 import { JwtAuthGuard } from "./jwt-guard/jwt-guard.guard";
@@ -54,9 +56,20 @@ export class AuthController {
     });
   }
 
-  @Get("for-get-password")
+  @Patch("forget-password")
   @UseGuards(JwtAuthGuard)
-  async getPassword(@Req() req: Request, @Res() res: Response): Promise<object> {
-    return {};
+  async forgetPassword(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Body() forgetPasswordDto: ForgetPasswordDto,
+  ): Promise<object> {
+    const userId: number = req.user.id;
+
+    await this.authService.forgetPassword(userId, forgetPasswordDto);
+
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      message: "Password reset successfully",
+    });
   }
 }
