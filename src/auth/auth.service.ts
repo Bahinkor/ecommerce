@@ -20,21 +20,14 @@ export class AuthService {
   ) {}
 
   async register(registerDto: RegisterDto): Promise<void> {
-    try {
-      const isUserExist = await this.userService.findOneByPhoneNumber(
-        registerDto.phone_number,
-        true,
-      );
+    const isUserExist = await this.userService.findOneByPhoneNumber(registerDto.phone_number, true);
 
-      if (isUserExist) throw new BadRequestException("User already exists");
+    if (isUserExist) throw new BadRequestException("User already exists");
 
-      await this.userService.create({
-        ...registerDto,
-        role: UserRoleEnum.NormalUser,
-      });
-    } catch (e) {
-      throw new BadRequestException(e.message);
-    }
+    await this.userService.create({
+      ...registerDto,
+      role: UserRoleEnum.NormalUser,
+    });
   }
 
   async login(loginDto: LoginDto): Promise<string> {
