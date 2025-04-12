@@ -7,6 +7,7 @@ import {
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
 
+import { User } from "../users/entities/user.entity";
 import { UserRoleEnum } from "../users/enums/user-role.enum";
 import { UsersService } from "../users/users.service";
 import { LoginDto } from "./dto/login.dto";
@@ -46,5 +47,15 @@ export class AuthService {
     const accessToken = this.jwtService.sign(payload);
 
     return accessToken;
+  }
+
+  async getMe(accessToken: string): Promise<User> {
+    try {
+      const payload = this.jwtService.verify(accessToken);
+      const userId = payload.sub;
+      return await this.userService.findOne(userId);
+    } catch (eer) {
+      throw new UnauthorizedException("Invalid token");
+    }
   }
 }

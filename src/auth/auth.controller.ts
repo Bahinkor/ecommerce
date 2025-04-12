@@ -1,11 +1,22 @@
-import { Body, Controller, HttpStatus, Post, Res } from "@nestjs/common";
-import { Response } from "express";
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Post,
+  Req,
+  Res,
+  UnauthorizedException,
+  UseGuards,
+} from "@nestjs/common";
+import { Request, Response } from "express";
 
 import { AuthService } from "./auth.service";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
+import { JwtAuthGuard } from "./jwt-guard/jwt-guard.guard";
 
-@Controller("auth")
+@Controller({ path: "auth", version: "1" })
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
@@ -22,6 +33,21 @@ export class AuthController {
   @Post("login")
   async login(@Res() res: Response, @Body() loginDto: LoginDto): Promise<object> {
     const user: string = await this.authService.login(loginDto);
+
+    return res.status(HttpStatus.OK).json({
+      data: user,
+      statusCode: HttpStatus.OK,
+      message: "User signed successfully",
+    });
+  }
+
+  @Get("me")
+  @UseGuards(JwtAuthGuard)
+  async getMe(@Req() req: Request, @Res() res: Response): Promise<object> {
+    const accessToken: string | undefined = req.headers.authorization?.split(" ")[1];
+
+    if (!accessToken) throw new UnauthorizedException("Invalid token");
+    const user = await this.authService.getMe(accessToken);
 
     return res.status(HttpStatus.OK).json({
       data: user,
