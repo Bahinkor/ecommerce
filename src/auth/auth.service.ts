@@ -49,13 +49,7 @@ export class AuthService {
     return accessToken;
   }
 
-  async getMe(accessToken: string): Promise<User> {
-    try {
-      const payload = this.jwtService.verify(accessToken);
-      const userId = payload.sub;
-      return await this.userService.findOne(userId);
-    } catch (eer) {
-      throw new UnauthorizedException("Invalid token");
-    }
+  async getMe(userId: number): Promise<User> {
+    return this.userService.findOne(userId);
   }
 }

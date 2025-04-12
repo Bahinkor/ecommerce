@@ -44,15 +44,19 @@ export class AuthController {
   @Get("me")
   @UseGuards(JwtAuthGuard)
   async getMe(@Req() req: Request, @Res() res: Response): Promise<object> {
-    const accessToken: string | undefined = req.headers.authorization?.split(" ")[1];
-
-    if (!accessToken) throw new UnauthorizedException("Invalid token");
-    const user = await this.authService.getMe(accessToken);
+    const userId: number = req.user.id;
+    const user = await this.authService.getMe(userId);
 
     return res.status(HttpStatus.OK).json({
       data: user,
       statusCode: HttpStatus.OK,
       message: "User signed successfully",
     });
+  }
+
+  @Get("for-get-password")
+  @UseGuards(JwtAuthGuard)
+  async getPassword(@Req() req: Request, @Res() res: Response): Promise<object> {
+    return {};
   }
 }
