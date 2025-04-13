@@ -97,7 +97,7 @@ export class UsersService {
     return user;
   }
 
-  async forgetPassword(userId: number, hashedPassword: string): Promise<void> {
+  async updatePassword(userId: number, hashedPassword: string): Promise<void> {
     const user = await this.findOne(userId);
     user.password = hashedPassword;
 

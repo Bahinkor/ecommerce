@@ -15,6 +15,7 @@ import { UsersService } from "../users/users.service";
 import { ForgetPasswordDto } from "./dto/forget-password.dto";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
+import { ResetPasswordDto } from "./dto/reset-password.dto";
 import { UpdatePasswordDto } from "./dto/update-password.dto";
 
 @Injectable()
@@ -73,18 +74,41 @@ export class AuthService {
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    await this.userService.forgetPassword(user.id, hashedPassword);
+    await this.userService.updatePassword(user.id, hashedPassword);
   }
 
   async forgetPassword(forgetPasswordDto: ForgetPasswordDto): Promise<void> {
     const { phoneNumber } = forgetPasswordDto;
-    const user = await this.userService.findOneByPhoneNumber(phoneNumber);
+    await this.userService.findOneByPhoneNumber(phoneNumber);
 
     // generate otp password code (for test)
     const otpPassword = "111111";
 
     // send otp password to user phone number with sms panel api
 
-    await this.redis.set(phoneNumber, otpPassword, "EX", +(process.env.REDIS_EXPIRATION ?? "180")); // type: second
+    await this.redis.set(
+      `otp:${phoneNumber}`,
+      otpPassword,
+      "EX",
+      +(process.env.REDIS_EXPIRATION ?? "180"),
+    ); // type: second
+  }
+
+  async resetPassword(resetPasswordDto: ResetPasswordDto) {
+    const { phoneNumber, otpPassword, newPassword } = resetPasswordDto;
+
+    const user = await this.userService.findOneByPhoneNumber(phoneNumber);
+
+    if (!user) throw new NotFoundException("user is not found");
+
+    const savedOptPasswordOnRedis = await this.redis.get(`otp:${phoneNumber}`);
+
+    if (otpPassword !== savedOptPasswordOnRedis)
+      throw new BadRequestException("otp password is invalid");
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    await this.userService.updatePassword(user.id, hashedPassword);
+    await this.redis.del(phoneNumber);
   }
 }

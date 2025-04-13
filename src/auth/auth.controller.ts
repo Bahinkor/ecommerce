@@ -15,6 +15,7 @@ import { AuthService } from "./auth.service";
 import { ForgetPasswordDto } from "./dto/forget-password.dto";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
+import { ResetPasswordDto } from "./dto/reset-password.dto";
 import { UpdatePasswordDto } from "./dto/update-password.dto";
 import { JwtAuthGuard } from "./jwt-guard/jwt-guard.guard";
 
@@ -83,6 +84,19 @@ export class AuthController {
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       message: "Send otp password successfully",
+    });
+  }
+
+  @Patch("reset-password")
+  async resetPassword(
+    @Res() res: Response,
+    @Body() resetPasswordDto: ResetPasswordDto,
+  ): Promise<object> {
+    await this.authService.resetPassword(resetPasswordDto);
+
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      message: "User password reset successfully",
     });
   }
 }
