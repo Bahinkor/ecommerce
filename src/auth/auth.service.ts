@@ -1,3 +1,4 @@
+import { InjectRedis } from "@nestjs-modules/ioredis";
 import {
   BadRequestException,
   Injectable,
@@ -6,10 +7,12 @@ import {
 } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
+import Redis from "ioredis";
 
 import { User } from "../users/entities/user.entity";
 import { UserRoleEnum } from "../users/enums/user-role.enum";
 import { UsersService } from "../users/users.service";
+import { ForgetPasswordDto } from "./dto/forget-password.dto";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
 import { UpdatePasswordDto } from "./dto/update-password.dto";
@@ -19,6 +22,9 @@ export class AuthService {
   constructor(
     private readonly userService: UsersService,
     private readonly jwtService: JwtService,
+
+    @InjectRedis()
+    private readonly redis: Redis,
   ) {}
 
   async register(registerDto: RegisterDto): Promise<void> {
@@ -68,5 +74,17 @@ export class AuthService {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     await this.userService.forgetPassword(user.id, hashedPassword);
+  }
+
+  async forgetPassword(forgetPasswordDto: ForgetPasswordDto): Promise<void> {
+    const { phoneNumber } = forgetPasswordDto;
+    const user = await this.userService.findOneByPhoneNumber(phoneNumber);
+
+    // generate otp password code (for test)
+    const otpPassword = "111111";
+
+    // send otp password to user phone number with sms panel api
+
+    await this.redis.set(phoneNumber, otpPassword, "EX", +(process.env.REDIS_EXPIRATION ?? "180")); // type: second
   }
 }

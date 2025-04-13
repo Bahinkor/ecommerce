@@ -1,3 +1,4 @@
+import { RedisModule } from "@nestjs-modules/ioredis";
 import { MiddlewareConsumer, Module, NestModule, RequestMethod } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { ThrottlerModule } from "@nestjs/throttler";
@@ -77,6 +78,12 @@ if (process.env.NODE_ENV === "test") {
           format: winston.format.combine(winston.format.timestamp(), winston.format.json()),
         }),
       ],
+    }),
+
+    // redis
+    RedisModule.forRoot({
+      type: "single",
+      url: `redis://localhost:${process.env.REDIS_PORT ?? 6379}`,
     }),
 
     // modules

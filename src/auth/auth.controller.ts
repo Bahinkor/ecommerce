@@ -12,6 +12,7 @@ import {
 import { Request, Response } from "express";
 
 import { AuthService } from "./auth.service";
+import { ForgetPasswordDto } from "./dto/forget-password.dto";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
 import { UpdatePasswordDto } from "./dto/update-password.dto";
@@ -69,6 +70,19 @@ export class AuthController {
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       message: "Password update successfully",
+    });
+  }
+
+  @Get("forget-password")
+  async forgetPassword(
+    @Res() res: Response,
+    @Body() forgetPasswordDto: ForgetPasswordDto,
+  ): Promise<object> {
+    await this.authService.forgetPassword(forgetPasswordDto);
+
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      message: "Send otp password successfully",
     });
   }
 }
