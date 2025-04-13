@@ -7,15 +7,14 @@ import {
   Post,
   Req,
   Res,
-  UnauthorizedException,
   UseGuards,
 } from "@nestjs/common";
 import { Request, Response } from "express";
 
 import { AuthService } from "./auth.service";
-import { ForgetPasswordDto } from "./dto/forget-password.dto";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
+import { UpdatePasswordDto } from "./dto/update-password.dto";
 import { JwtAuthGuard } from "./jwt-guard/jwt-guard.guard";
 
 @Controller({ path: "auth", version: "1" })
@@ -56,20 +55,20 @@ export class AuthController {
     });
   }
 
-  @Patch("forget-password")
+  @Patch("update-password")
   @UseGuards(JwtAuthGuard)
-  async forgetPassword(
+  async updatePassword(
     @Req() req: Request,
     @Res() res: Response,
-    @Body() forgetPasswordDto: ForgetPasswordDto,
+    @Body() updatePasswordDto: UpdatePasswordDto,
   ): Promise<object> {
     const userId: number = req.user.id;
 
-    await this.authService.forgetPassword(userId, forgetPasswordDto);
+    await this.authService.updatePassword(userId, updatePasswordDto);
 
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
-      message: "Password reset successfully",
+      message: "Password update successfully",
     });
   }
 }

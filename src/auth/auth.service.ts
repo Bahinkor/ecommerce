@@ -10,9 +10,9 @@ import * as bcrypt from "bcrypt";
 import { User } from "../users/entities/user.entity";
 import { UserRoleEnum } from "../users/enums/user-role.enum";
 import { UsersService } from "../users/users.service";
-import { ForgetPasswordDto } from "./dto/forget-password.dto";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
+import { UpdatePasswordDto } from "./dto/update-password.dto";
 
 @Injectable()
 export class AuthService {
@@ -54,9 +54,9 @@ export class AuthService {
     return this.userService.findOne(userId);
   }
 
-  async forgetPassword(userId: number, forgetPasswordDto: ForgetPasswordDto): Promise<void> {
+  async updatePassword(userId: number, updatePasswordDto: UpdatePasswordDto): Promise<void> {
     const user = await this.userService.findOneWithPassword(userId);
-    const { currentPassword, newPassword } = forgetPasswordDto;
+    const { currentPassword, newPassword } = updatePasswordDto;
     const { password } = user;
 
     if (currentPassword === newPassword) throw new BadRequestException("password is duplicate");
