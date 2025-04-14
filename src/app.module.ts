@@ -83,7 +83,7 @@ if (process.env.NODE_ENV === "test") {
     // redis
     RedisModule.forRoot({
       type: "single",
-      url: `redis://localhost:${process.env.REDIS_PORT ?? 6379}`,
+      url: process.env.REDIS_HOST,
     }),
 
     // modules
