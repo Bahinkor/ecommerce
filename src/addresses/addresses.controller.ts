@@ -9,21 +9,31 @@ import {
   Post,
   Put,
   Query,
+  Req,
   Res,
+  UseGuards,
 } from "@nestjs/common";
-import { Response } from "express";
+import { Request, Response } from "express";
 
+import { AdminGuard } from "../auth/admin/admin.guard";
+import { JwtAuthGuard } from "../auth/jwt-guard/jwt-guard.guard";
 import { AddressesService } from "./addresses.service";
 import { CreateAddressDto } from "./dto/create-address.dto";
 import { UpdateAddressDto } from "./dto/update-address.dto";
 
-@Controller("addresses")
+@Controller({ path: "addresses", version: "1" })
 export class AddressesController {
   constructor(private readonly addressesService: AddressesService) {}
 
   @Post()
-  async create(@Res() res: Response, @Body() createAddressDto: CreateAddressDto): Promise<object> {
-    const createdAddress = await this.addressesService.create(createAddressDto);
+  @UseGuards(JwtAuthGuard)
+  async create(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Body() createAddressDto: CreateAddressDto,
+  ): Promise<object> {
+    const userId: number = req.user.id;
+    const createdAddress = await this.addressesService.create(userId, createAddressDto);
 
     return res.status(HttpStatus.CREATED).json({
       data: createdAddress,
@@ -33,6 +43,7 @@ export class AddressesController {
   }
 
   @Get()
+  @UseGuards(JwtAuthGuard, AdminGuard)
   async findAll(
     @Res() res: Response,
     @Query("limit") limit: number = 10,
@@ -48,6 +59,7 @@ export class AddressesController {
   }
 
   @Get(":id")
+  @UseGuards(JwtAuthGuard, AdminGuard)
   async findOne(@Res() res: Response, @Param("id", ParseIntPipe) id: number): Promise<object> {
     const address = await this.addressesService.findOne(id);
 
@@ -58,7 +70,21 @@ export class AddressesController {
     });
   }
 
+  @Get("me")
+  @UseGuards(JwtAuthGuard)
+  async findMe(@Res() res: Response, @Req() req: Request): Promise<object> {
+    const userId: number = req.user.id;
+    const address = await this.addressesService.findOne(userId);
+
+    return res.status(HttpStatus.OK).json({
+      data: address,
+      statusCode: HttpStatus.OK,
+      message: "Address fetched successfully",
+    });
+  }
+
   @Put(":id")
+  @UseGuards(JwtAuthGuard, AdminGuard)
   async update(
     @Res() res: Response,
     @Param("id", ParseIntPipe) id: number,
@@ -74,8 +100,21 @@ export class AddressesController {
   }
 
   @Delete(":id")
+  @UseGuards(JwtAuthGuard, AdminGuard)
   async remove(@Res() res: Response, @Param("id", ParseIntPipe) id: number): Promise<object> {
     await this.addressesService.remove(id);
+
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      message: "Address deleted successfully",
+    });
+  }
+
+  @Delete("me")
+  @UseGuards(JwtAuthGuard)
+  async removeMe(@Req() req: Request, @Res() res: Response): Promise<object> {
+    const userId: number = req.user.id;
+    await this.addressesService.remove(userId);
 
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
