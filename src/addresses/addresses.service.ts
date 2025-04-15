@@ -43,17 +43,13 @@ export class AddressesService {
   }
 
   async update(id: number, updateAddressDto: UpdateAddressDto): Promise<Address> {
-    try {
-      const address = await this.findOne(id);
+    const address = await this.findOne(id);
 
-      if (!address) throw new NotFoundException(`Address with id ${id} not found.`);
+    if (!address) throw new NotFoundException(`Address with id ${id} not found.`);
 
-      await this.addressesRepository.update({ id }, updateAddressDto);
+    await this.addressesRepository.update({ id }, updateAddressDto);
 
-      return await this.findOne(id);
-    } catch (e) {
-      throw new BadRequestException(e.message);
-    }
+    return this.findOne(id);
   }
 
   async remove(id: number): Promise<void> {
