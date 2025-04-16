@@ -1,8 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
-import { User } from "../users/entities/user.entity";
+import { UsersService } from "../users/users.service";
 import { CreateAddressDto } from "./dto/create-address.dto";
 import { UpdateAddressDto } from "./dto/update-address.dto";
 import { Address } from "./entities/address.entity";
@@ -12,12 +12,11 @@ export class AddressesService {
   constructor(
     @InjectRepository(Address)
     private readonly addressesRepository: Repository<Address>,
-    @InjectRepository(User)
-    private readonly usersRepository: Repository<User>,
+    private readonly usersService: UsersService,
   ) {}
 
   async create(userId: number, createAddressDto: CreateAddressDto): Promise<object> {
-    const user = await this.usersRepository.findOneByOrFail({ id: userId });
+    const user = await this.usersService.findOne(userId);
     const newAddress = this.addressesRepository.create({ ...createAddressDto, user });
 
     return this.addressesRepository.save(newAddress);
