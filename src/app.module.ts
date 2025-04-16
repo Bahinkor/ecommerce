@@ -5,12 +5,14 @@ import { ThrottlerModule } from "@nestjs/throttler";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import * as dotenv from "dotenv";
 import { WinstonModule } from "nest-winston";
-import * as winston from "winston";
 
 import { AddressesModule } from "./addresses/addresses.module";
 import { AuthModule } from "./auth/auth.module";
 import { CategoriesModule } from "./categories/categories.module";
 import { CommentsModule } from "./comments/comments.module";
+import { throttlerConfigOptions } from "./common/config/throttler.config";
+import { winstonConfigOptions } from "./common/config/winston-logger.config";
+import { dataSourceOptions } from "./common/db/data-source";
 import { LoggerMiddleware } from "./common/middleware/logger.middleware";
 import { LikesModule } from "./likes/likes.module";
 import { OrderModule } from "./order/order.module";
@@ -27,64 +29,19 @@ if (process.env.NODE_ENV === "test") {
 @Module({
   imports: [
     // configuration
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
+    ConfigModule.forRoot({ isGlobal: true }),
 
     // rate limiter
-    ThrottlerModule.forRoot({
-      throttlers: [
-        {
-          ttl: 60,
-          limit: 10,
-        },
-      ],
-    }),
+    ThrottlerModule.forRoot(throttlerConfigOptions),
 
     // database connection
-    TypeOrmModule.forRoot({
-      type: "mysql",
-      host: process.env.DB_HOST,
-      port: +(process.env.DB_PORT ?? 3306),
-      username: process.env.DB_USERNAME,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
-      entities: [`${__dirname}/**/entities/*.entity{.ts,.js}`],
-      synchronize: true,
-    }),
+    TypeOrmModule.forRoot(dataSourceOptions),
 
     // logger configuration
-    WinstonModule.forRoot({
-      transports: [
-        new winston.transports.Console({
-          format: winston.format.simple(),
-        }),
-
-        new winston.transports.File({
-          filename: "logs/app.log",
-          level: "info",
-          format: winston.format.combine(winston.format.timestamp(), winston.format.json()),
-        }),
-
-        new winston.transports.File({
-          filename: "logs/requests.log",
-          level: "http",
-          format: winston.format.combine(winston.format.timestamp(), winston.format.json()),
-        }),
-
-        new winston.transports.File({
-          filename: "logs/errors.log",
-          level: "error",
-          format: winston.format.combine(winston.format.timestamp(), winston.format.json()),
-        }),
-      ],
-    }),
+    WinstonModule.forRoot(winstonConfigOptions),
 
     // redis
-    RedisModule.forRoot({
-      type: "single",
-      url: process.env.REDIS_HOST,
-    }),
+    RedisModule.forRoot({ type: "single", url: process.env.REDIS_HOST }),
 
     // modules
     UsersModule,
