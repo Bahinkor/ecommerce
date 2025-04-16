@@ -58,10 +58,11 @@ export class AddressesController {
     });
   }
 
-  @Get(":id")
-  @UseGuards(JwtAuthGuard, AdminGuard)
-  async findOne(@Res() res: Response, @Param("id", ParseIntPipe) id: number): Promise<object> {
-    const address = await this.addressesService.findOne(id);
+  @Get("me")
+  @UseGuards(JwtAuthGuard)
+  async findMe(@Res() res: Response, @Req() req: Request): Promise<object> {
+    const userId: number = req.user.id;
+    const address = await this.addressesService.findOne(userId);
 
     return res.status(HttpStatus.OK).json({
       data: address,
@@ -70,11 +71,10 @@ export class AddressesController {
     });
   }
 
-  @Get("me")
-  @UseGuards(JwtAuthGuard)
-  async findMe(@Res() res: Response, @Req() req: Request): Promise<object> {
-    const userId: number = req.user.id;
-    const address = await this.addressesService.findOne(userId);
+  @Get(":id")
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  async findOne(@Res() res: Response, @Param("id", ParseIntPipe) id: number): Promise<object> {
+    const address = await this.addressesService.findOne(id);
 
     return res.status(HttpStatus.OK).json({
       data: address,
@@ -99,10 +99,15 @@ export class AddressesController {
     });
   }
 
-  @Delete(":id")
-  @UseGuards(JwtAuthGuard, AdminGuard)
-  async remove(@Res() res: Response, @Param("id", ParseIntPipe) id: number): Promise<object> {
-    await this.addressesService.remove(id);
+  @Delete("me/:id")
+  @UseGuards(JwtAuthGuard)
+  async removeMe(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Param("id", ParseIntPipe) id: number,
+  ): Promise<object> {
+    const userId: number = req.user.id;
+    await this.addressesService.removeOwmAddress(id, userId);
 
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
@@ -110,11 +115,10 @@ export class AddressesController {
     });
   }
 
-  @Delete("me")
-  @UseGuards(JwtAuthGuard)
-  async removeMe(@Req() req: Request, @Res() res: Response): Promise<object> {
-    const userId: number = req.user.id;
-    await this.addressesService.remove(userId);
+  @Delete(":id")
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  async remove(@Res() res: Response, @Param("id", ParseIntPipe) id: number): Promise<object> {
+    await this.addressesService.remove(id);
 
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,

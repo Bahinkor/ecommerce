@@ -57,4 +57,10 @@ export class AddressesService {
 
     if (!deleteResult.affected) throw new NotFoundException(`Address with id ${id} not found.`);
   }
+
+  async removeOwmAddress(id: number, userId: number): Promise<void> {
+    const deleteResult = await this.addressesRepository.delete({ id, user: { id: userId } });
+
+    if (!deleteResult.affected) throw new NotFoundException(`Address with id ${id} not found.`);
+  }
 }
