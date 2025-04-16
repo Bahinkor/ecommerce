@@ -42,6 +42,10 @@ export class AddressesService {
     return address;
   }
 
+  async findOwnAddresses(userId: number): Promise<Address[]> {
+    return this.addressesRepository.find({ where: { user: { id: userId } } });
+  }
+
   async update(id: number, updateAddressDto: UpdateAddressDto): Promise<Address> {
     const address = await this.findOne(id);
 

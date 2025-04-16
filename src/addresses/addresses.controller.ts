@@ -62,7 +62,7 @@ export class AddressesController {
   @UseGuards(JwtAuthGuard)
   async findMe(@Res() res: Response, @Req() req: Request): Promise<object> {
     const userId: number = req.user.id;
-    const address = await this.addressesService.findOne(userId);
+    const address = await this.addressesService.findOwnAddresses(userId);
 
     return res.status(HttpStatus.OK).json({
       data: address,
