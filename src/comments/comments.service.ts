@@ -17,25 +17,25 @@ export class CommentsService {
     private readonly productsService: ProductsService,
   ) {}
 
-  async create(createCommentDto: CreateCommentDto): Promise<Comment> {
-    const { user_id, product_id, replay_to, ...commentData } = createCommentDto;
-    const user = await this.usersService.findOne(user_id);
-    const product = await this.productsService.findOne(product_id);
+  async create(userId: number, createCommentDto: CreateCommentDto): Promise<Comment> {
+    const user = await this.usersService.findOne(userId);
+    const product = await this.productsService.findOne(createCommentDto.product_id);
 
     let replayToComment: Comment | null = null;
-    if (replay_to) {
+    if (createCommentDto.replay_to) {
       replayToComment = await this.commentRepository.findOne({
-        where: { id: replay_to },
+        where: { id: createCommentDto.replay_to },
         relations: ["replay_to"],
       });
 
-      if (!replayToComment) throw new NotFoundException(`Comment id ${replay_to} is not found`);
+      if (!replayToComment)
+        throw new NotFoundException(`Comment id ${createCommentDto.replay_to} is not found`);
       if (replayToComment.replay_to !== null)
         throw new BadRequestException("You are not allowed to reply to this comment.");
     }
 
     const comment = this.commentRepository.create({
-      ...commentData,
+      ...createCommentDto,
       user,
       product,
       replay_to: replayToComment,
@@ -78,10 +78,20 @@ export class CommentsService {
     return comment;
   }
 
-  async acceptComment(id: number): Promise<void> {
+  async acceptComment(id: number): Promise<Comment> {
     const comment: Comment = await this.findOne(id);
 
     comment.is_accepted = true;
+    return this.commentRepository.save(comment);
+  }
+
+  async remove(id: number): Promise<void> {
+    const comment: Comment = await this.findOne(id);
+    comment.replies = [];
+
+    // Unlink all associated replies to prevent foreign key constraint issues
     await this.commentRepository.save(comment);
+    // Remove the comment from the database
+    await this.commentRepository.remove(comment);
   }
 }
