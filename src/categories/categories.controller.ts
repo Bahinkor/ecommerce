@@ -9,9 +9,12 @@ import {
   Post,
   Put,
   Res,
+  UseGuards,
 } from "@nestjs/common";
 import { Response } from "express";
 
+import { AdminGuard } from "../auth/admin/admin.guard";
+import { JwtAuthGuard } from "../auth/jwt-guard/jwt-guard.guard";
 import { CategoriesService } from "./categories.service";
 import { CreateCategoryDto } from "./dto/create-category.dto";
 import { UpdateCategoryDto } from "./dto/update-category.dto";
@@ -21,6 +24,7 @@ export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard, AdminGuard)
   async create(@Res() res: Response, @Body() createCategoryDto: CreateCategoryDto) {
     const category = await this.categoriesService.create(createCategoryDto);
 
@@ -43,6 +47,7 @@ export class CategoriesController {
   }
 
   @Put(":id")
+  @UseGuards(JwtAuthGuard, AdminGuard)
   async update(
     @Res() res: Response,
     @Body() updateCategoryDto: UpdateCategoryDto,
@@ -58,6 +63,7 @@ export class CategoriesController {
   }
 
   @Delete(":id")
+  @UseGuards(JwtAuthGuard, AdminGuard)
   async delete(@Res() res: Response, @Param("id", ParseIntPipe) id: number) {
     await this.categoriesService.remove(id);
 
