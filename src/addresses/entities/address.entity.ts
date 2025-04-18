@@ -25,14 +25,14 @@ export class Address {
   @Column()
   address: string;
 
-  @Column({ length: 10 })
-  postal_code: string;
+  @Column({ name: "postal_code", length: 10 })
+  postalCode: string;
 
-  @Column({ length: 11 })
-  receiver_phone_number: string;
+  @Column({ name: "receiver_phone_number", length: 11 })
+  receiverPhoneNumber: string;
 
   @Column({ nullable: true })
-  descriptions: string;
+  description: string;
 
   @ManyToOne(() => User, (user: User) => user.addresses)
   user: User;
@@ -40,9 +40,9 @@ export class Address {
   @OneToMany(() => Order, (order: Order) => order.address)
   orders: Order[];
 
-  @CreateDateColumn()
-  created_at: Date;
+  @CreateDateColumn({ name: "created_at" })
+  createdAt: Date;
 
-  @UpdateDateColumn()
-  updated_at: Date;
+  @UpdateDateColumn({ name: "updated_at" })
+  updatedAt: Date;
 }

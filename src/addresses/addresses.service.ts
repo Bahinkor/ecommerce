@@ -1,8 +1,7 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
 
 import { UsersService } from "../users/users.service";
+import { AddressesRepository } from "./addresses.repository";
 import { CreateAddressDto } from "./dto/create-address.dto";
 import { UpdateAddressDto } from "./dto/update-address.dto";
 import { Address } from "./entities/address.entity";
@@ -10,62 +9,43 @@ import { Address } from "./entities/address.entity";
 @Injectable()
 export class AddressesService {
   constructor(
-    @InjectRepository(Address)
-    private readonly addressesRepository: Repository<Address>,
+    private readonly addressesRepository: AddressesRepository,
     private readonly usersService: UsersService,
   ) {}
 
   async create(userId: number, createAddressDto: CreateAddressDto): Promise<object> {
     const user = await this.usersService.findOne(userId);
-    const newAddress = this.addressesRepository.create({ ...createAddressDto, user });
-
-    return this.addressesRepository.save(newAddress);
+    return this.addressesRepository.create(createAddressDto, user);
   }
 
   findAll(limit: number = 10, page: number = 1): Promise<Address[]> {
-    const query = this.addressesRepository.createQueryBuilder("addresses");
-
-    query
-      .skip((page - 1) * limit)
-      .take(limit)
-      .leftJoinAndSelect("addresses.user", "user");
-
-    return query.getMany();
+    return this.addressesRepository.findAll(limit, page);
   }
 
   async findOne(id: number): Promise<Address> {
-    const address = await this.addressesRepository.findOne({ where: { id }, relations: ["user"] });
-
+    const address = await this.addressesRepository.findOne(id);
     if (!address) throw new NotFoundException(`Address with id ${id} not found.`);
-
     return address;
   }
 
-  async findOwnAddresses(userId: number): Promise<Address[]> {
-    return this.addressesRepository.find({ where: { user: { id: userId } } });
+  async findByUserId(userId: number): Promise<Address[]> {
+    return this.addressesRepository.findByUserId(userId);
   }
 
   async update(id: number, updateAddressDto: UpdateAddressDto): Promise<Address> {
-    const address = await this.findOne(id);
-
-    if (!address) throw new NotFoundException(`Address with id ${id} not found.`);
-
-    await this.addressesRepository.update({ id }, updateAddressDto);
-
+    await this.findOne(id);
+    await this.addressesRepository.update(id, updateAddressDto);
     return this.findOne(id);
   }
 
-  async remove(id: number): Promise<void> {
-    const deleteResult = await this.addressesRepository.delete({ id });
-
-    if (!deleteResult.affected) throw new NotFoundException(`Address with id ${id} not found.`);
+  async delete(id: number): Promise<void> {
+    await this.findOne(id);
+    await this.addressesRepository.delete(id);
   }
 
-  async removeOwmAddress(id: number, userId: number): Promise<void> {
-    const address = await this.addressesRepository.findOne({ where: { id, user: { id: userId } } });
-
+  async deleteByAddressIdAndUserId(id: number, userId: number): Promise<void> {
+    const address = await this.addressesRepository.findOneByAddressIdAndUserId(id, userId);
     if (!address) throw new NotFoundException(`Address with id ${id} not found.`);
-
     await this.addressesRepository.remove(address);
   }
 }

@@ -1,5 +1,5 @@
 import { Transform } from "class-transformer";
-import { IsNotEmpty, IsNumber, IsOptional, IsString, Length, Matches } from "class-validator";
+import { IsNotEmpty, IsOptional, IsString, Length, Matches } from "class-validator";
 
 export class CreateAddressDto {
   @IsString()
@@ -18,14 +18,14 @@ export class CreateAddressDto {
   @IsNotEmpty()
   @Transform(({ value }) => value.trim())
   @Length(10, 10)
-  postal_code: string;
+  postalCode: string;
 
   @IsString()
   @IsNotEmpty()
   @Transform(({ value }) => value.trim())
   @Length(11, 11)
   @Matches(/^09[0-9]{9}$/)
-  receiver_phone_number: string;
+  receiverPhoneNumber: string;
 
   @IsString()
   @IsNotEmpty()

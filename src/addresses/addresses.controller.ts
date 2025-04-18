@@ -62,7 +62,7 @@ export class AddressesController {
   @UseGuards(JwtAuthGuard)
   async findMe(@Res() res: Response, @Req() req: Request): Promise<object> {
     const userId: number = req.user.id;
-    const address = await this.addressesService.findOwnAddresses(userId);
+    const address = await this.addressesService.findByUserId(userId);
 
     return res.status(HttpStatus.OK).json({
       data: address,
@@ -101,13 +101,13 @@ export class AddressesController {
 
   @Delete("me/:id")
   @UseGuards(JwtAuthGuard)
-  async removeMe(
+  async removeMyAddress(
     @Req() req: Request,
     @Res() res: Response,
-    @Param("id", ParseIntPipe) id: number,
+    @Param("id", ParseIntPipe) addressId: number,
   ): Promise<object> {
     const userId: number = req.user.id;
-    await this.addressesService.removeOwmAddress(id, userId);
+    await this.addressesService.deleteByAddressIdAndUserId(addressId, userId);
 
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
@@ -118,7 +118,7 @@ export class AddressesController {
   @Delete(":id")
   @UseGuards(JwtAuthGuard, AdminGuard)
   async remove(@Res() res: Response, @Param("id", ParseIntPipe) id: number): Promise<object> {
-    await this.addressesService.remove(id);
+    await this.addressesService.delete(id);
 
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
