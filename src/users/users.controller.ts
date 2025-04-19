@@ -81,7 +81,7 @@ export class UsersController {
 
   @Delete(":id")
   async remove(@Param("id", ParseIntPipe) id: number, @Res() res: Response): Promise<object> {
-    await this.usersService.remove(id);
+    await this.usersService.delete(id);
 
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,

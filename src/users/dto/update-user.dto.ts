@@ -7,7 +7,7 @@ export class UpdateUserDto {
   @IsNotEmpty()
   @MaxLength(35)
   @IsOptional()
-  display_name: string;
+  displayName: string;
 
   @IsEnum(UserRoleEnum)
   @IsOptional()

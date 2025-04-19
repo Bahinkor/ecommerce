@@ -11,6 +11,7 @@ import {
 } from "@nestjs/common";
 import { Request, Response } from "express";
 
+import { User } from "../users/entities/user.entity";
 import { AuthService } from "./auth.service";
 import { ForgetPasswordDto } from "./dto/forget-password.dto";
 import { LoginDto } from "./dto/login.dto";
@@ -25,9 +26,10 @@ export class AuthController {
 
   @Post("register")
   async register(@Res() res: Response, @Body() registerDto: RegisterDto): Promise<object> {
-    await this.authService.register(registerDto);
+    const user: User = await this.authService.register(registerDto);
 
     return res.status(HttpStatus.CREATED).json({
+      data: user,
       statusCode: HttpStatus.CREATED,
       message: "User created successfully",
     });
@@ -65,7 +67,6 @@ export class AuthController {
     @Body() updatePasswordDto: UpdatePasswordDto,
   ): Promise<object> {
     const userId: number = req.user.id;
-
     await this.authService.updatePassword(userId, updatePasswordDto);
 
     return res.status(HttpStatus.OK).json({

@@ -3,6 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
 
+import { User } from "../../users/entities/user.entity";
 import { UsersService } from "../../users/users.service";
 
 @Injectable()
@@ -23,7 +24,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException("Invalid token");
     }
 
-    const user = await this.usersService.findOne(payload.sub);
+    const user: User | null = await this.usersService.findOne(payload.sub);
 
     if (!user) {
       throw new UnauthorizedException("Invalid token");
@@ -31,8 +32,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     return {
       userId: user.id,
-      phone_number: user.phone_number,
-      display_name: user.display_name,
+      phone_number: user.phoneNumber,
+      display_name: user.displayName,
       role: user.role,
     };
   }

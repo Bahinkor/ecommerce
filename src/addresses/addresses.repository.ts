@@ -41,7 +41,7 @@ export class AddressesRepository {
     return this.addressesRepository.findOne({ where: { id: addressId, user: { id: userId } } });
   }
 
-  async update(id: number, updateAddressDto: UpdateAddressDto): Promise<void> {
+  async update(id: number, updateAddressDto: UpdateAddressDto) {
     await this.addressesRepository.update({ id }, updateAddressDto);
   }
 

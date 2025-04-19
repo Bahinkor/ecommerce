@@ -51,22 +51,22 @@ describe("UsersService", () => {
 
   it("calls UserService.create and returns the new user", async () => {
     const createUserDto: CreateUserDto = {
-      display_name: "Jon Deno",
-      phone_number: "09113456789",
+      displayName: "Jon Deno",
+      phoneNumber: "09113456789",
       password: "test_pass",
       role: UserRoleEnum.NormalUser,
     };
 
     const savedUser: User = {
       id: 1,
-      display_name: "Jon Deno",
-      phone_number: "09113456789",
+      displayName: "Jon Deno",
+      phoneNumber: "09113456789",
       password: "hashed_password",
       role: UserRoleEnum.NormalUser,
-      created_at: new Date(),
-      updated_at: new Date(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
       addresses: [],
-      basket_items: [],
+      basketItems: [],
       comments: [],
       likes: [],
       tickets: [],
@@ -132,11 +132,11 @@ describe("UsersService", () => {
 
   it("should return updated user UserService.update is called with a valid ID", async () => {
     const userId: number = 1;
-    const updateData = { display_name: "New Name", role: UserRoleEnum.NormalUser };
+    const updateData = { displayName: "New Name", role: UserRoleEnum.NormalUser };
 
     const exitingUser: User = new User();
     exitingUser.id = userId;
-    exitingUser.display_name = "Old Name";
+    exitingUser.displayName = "Old Name";
     exitingUser.role = UserRoleEnum.NormalUser;
 
     mockUserRepository.findOne.mockResolvedValueOnce(exitingUser);
@@ -151,7 +151,7 @@ describe("UsersService", () => {
 
     mockUserRepository.delete.mockResolvedValue({ affected: 1 });
 
-    const result = await usersService.remove(userId);
+    const result = await usersService.delete(userId);
     expect(result).toBeUndefined();
   });
 });

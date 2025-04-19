@@ -1,106 +1,72 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
 import * as bcrypt from "bcrypt";
-import { Repository } from "typeorm";
 
 import { Product } from "../products/entities/product.entity";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { User } from "./entities/user.entity";
 import { UserRoleEnum } from "./enums/user-role.enum";
+import { UsersRepository } from "./users.repository";
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
-  ) {}
+  constructor(private readonly usersRepository: UsersRepository) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-    const newUser = this.userRepository.create({ ...createUserDto, password: hashedPassword });
-
-    return this.userRepository.save(newUser);
+    const hashedPassword = this.hashPassword(createUserDto.password);
+    return this.usersRepository.create({ ...createUserDto, password: hashedPassword });
   }
 
   findAll(role?: UserRoleEnum, limit: number = 10, page: number = 1): Promise<User[]> {
-    const query = this.userRepository.createQueryBuilder("users");
-
-    if (role) {
-      query.where("role = :role", { role });
-    }
-
-    query.addSelect("users.phone_number");
-    // pagination
-    query.skip((page - 1) * limit).take(limit);
-
-    return query.getMany();
+    return this.usersRepository.findAll(role, limit, page);
   }
 
   async findOne(id: number): Promise<User> {
-    const user = await this.userRepository.findOne({
-      where: { id },
-      relations: ["basket_items", "addresses", "orders"],
-      select: { password: false },
-    });
-
+    const user = await this.usersRepository.fineOne(id);
     if (!user) throw new NotFoundException(`User id ${id} not found`);
-
     return user;
   }
 
-  async findOneByPhoneNumber(
-    phoneNumber: string,
-    checkExist: boolean = false,
-  ): Promise<User | null> {
-    const user = await this.userRepository
-      .createQueryBuilder("user")
-      .addSelect("user.password")
-      .where("user.phone_number = :phoneNumber", { phoneNumber })
-      .getOne();
-
-    if (!user && !checkExist) throw new NotFoundException(`User ${phoneNumber} not found`);
-
+  async findOneByPhoneNumber(phoneNumber: string): Promise<User> {
+    const user = await this.usersRepository.findOneByPhoneNumber(phoneNumber);
+    if (!user) throw new NotFoundException(`User ${phoneNumber} not found`);
     return user;
   }
 
   async update(id: number, updateUserDto: UpdateUserDto): Promise<object> {
-    const user = await this.findOne(id);
-
-    if (!user) throw new NotFoundException(`User id ${id} not found`);
-
-    return this.userRepository.update({ id }, updateUserDto);
+    await this.usersRepository.update(id, updateUserDto);
+    return this.findOne(id);
   }
 
   async addProductToBasket(userId: number, product: Product): Promise<User> {
     const user: User = await this.findOne(userId);
-
-    user.basket_items.push(product);
-
-    return this.userRepository.save(user);
+    user.basketItems.push(product);
+    return this.usersRepository.save(user);
   }
 
-  async remove(id: number): Promise<void> {
-    const deleteResult = await this.userRepository.delete({ id });
-
+  async delete(id: number): Promise<void> {
+    const deleteResult = await this.usersRepository.delete(id);
     if (!deleteResult.affected) throw new NotFoundException(`User id ${id} not found`);
   }
 
   async findOneWithPassword(id: number): Promise<User> {
-    const user = await this.userRepository.findOne({
-      where: { id },
-      select: { password: true },
-    });
-
+    const user = await this.usersRepository.findOneWithPassword(id);
     if (!user) throw new NotFoundException(`User id ${id} not found`);
-
     return user;
   }
 
   async updatePassword(userId: number, hashedPassword: string): Promise<void> {
     const user = await this.findOne(userId);
     user.password = hashedPassword;
+    await this.usersRepository.save(user);
+  }
 
-    await this.userRepository.save(user);
+  hashPassword(password: string): string {
+    return bcrypt.hash(password, 10);
+  }
+
+  async ensurePhoneNotRegistered(phoneNumber: string): Promise<void> {
+    const user = await this.findOneByPhoneNumber(phoneNumber);
+    if (user) throw new BadRequestException("Phone number already registered");
   }
 }

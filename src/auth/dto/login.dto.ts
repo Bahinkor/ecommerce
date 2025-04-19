@@ -7,7 +7,7 @@ export class LoginDto {
   @Transform(({ value }) => value.trim())
   @Length(11, 11)
   @Matches(/^09[0-9]{9}$/)
-  phone_number: string;
+  phoneNumber: string;
 
   @IsString()
   @IsNotEmpty()

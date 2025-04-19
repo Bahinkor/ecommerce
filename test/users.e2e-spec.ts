@@ -37,8 +37,8 @@ describe("users resource e2e test", () => {
 
   it("should create and return a user", async () => {
     const exampleUser: CreateUserDto = {
-      display_name: "Jon Snow",
-      phone_number: "09110000000",
+      displayName: "Jon Snow",
+      phoneNumber: "09110000000",
       password: "123456",
       role: UserRoleEnum.NormalUser,
     };

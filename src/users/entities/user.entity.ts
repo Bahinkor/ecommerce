@@ -22,11 +22,11 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ length: 35 })
-  display_name: string;
+  @Column({ length: 35, name: "display_name" })
+  displayName: string;
 
-  @Column({ unique: true, length: 11 })
-  phone_number?: string;
+  @Column({ unique: true, length: 11, name: "phone_number" })
+  phoneNumber?: string;
 
   @Column({ type: "varchar", select: false })
   password: string;
@@ -55,11 +55,11 @@ export class User {
     joinColumn: { name: "user_id", referencedColumnName: "id" },
     inverseJoinColumn: { name: "product_id", referencedColumnName: "id" },
   })
-  basket_items: Product[];
+  basketItems: Product[];
 
-  @CreateDateColumn()
-  created_at: Date;
+  @CreateDateColumn({ name: "created_at" })
+  createdAt: Date;
 
-  @UpdateDateColumn()
-  updated_at: Date;
+  @UpdateDateColumn({ name: "updated_at" })
+  updatedAt: Date;
 }

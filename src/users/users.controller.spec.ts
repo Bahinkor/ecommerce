@@ -49,8 +49,8 @@ describe("UsersController", () => {
 
   it("calls UserController.create and returns the new user", async () => {
     const createUserDto: CreateUserDto = {
-      display_name: "Jon Deno",
-      phone_number: "09113456789",
+      displayName: "Jon Deno",
+      phoneNumber: "09113456789",
       password: "test_pass",
       role: UserRoleEnum.NormalUser,
     };
@@ -92,7 +92,7 @@ describe("UsersController", () => {
   it("calls UserController.update and returns the updated user", async () => {
     const res = mockResponse();
     const updateUserDto: UpdateUserDto = {
-      display_name: "Jon Deno",
+      displayName: "Jon Deno",
       role: UserRoleEnum.NormalUser,
     };
 
