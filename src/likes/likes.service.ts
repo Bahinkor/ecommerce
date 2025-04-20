@@ -1,59 +1,38 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Request } from "express";
-import { Repository } from "typeorm";
 
 import { ProductsService } from "../products/products.service";
 import { UsersService } from "../users/users.service";
 import { CreateLikeDto } from "./dto/create-like.dto";
 import { Like } from "./entities/like.entity";
+import { LikesRepository } from "./likes.repository";
 
 @Injectable()
 export class LikesService {
   constructor(
-    @InjectRepository(Like)
-    private readonly likeRepository: Repository<Like>,
-    // services
+    private readonly likesRepository: LikesRepository,
     private readonly productsService: ProductsService,
     private readonly usersService: UsersService,
   ) {}
 
-  async create(createLikeDto: CreateLikeDto, req: Request): Promise<Like> {
-    const { product: productId } = createLikeDto;
-    const { userId } = req.user;
-
-    const product = await this.productsService.findOne(productId);
+  async create(createLikeDto: CreateLikeDto, userId: number): Promise<Like> {
+    const product = await this.productsService.findOne(createLikeDto.product);
     const user = await this.usersService.findOne(userId);
-
-    await this.existingLike(productId);
-
-    const newLike = this.likeRepository.create({ product, user });
-
-    return this.likeRepository.save(newLike);
+    await this.existingLike(createLikeDto.product);
+    return this.likesRepository.create(product, user);
   }
 
   async existingLike(id: number): Promise<void> {
-    const like = await this.likeRepository.findOne({ where: { id } });
+    const like = await this.likesRepository.findOne(id);
     if (like) throw new BadRequestException(`Like for product id ${id} already exists`);
   }
 
-  async findAll(req: Request): Promise<Like[]> {
-    const { userId } = req.user;
-
-    const query = this.likeRepository.createQueryBuilder("likes");
-
-    query.where("likes.user = :userId", { userId });
-    query.leftJoinAndSelect("likes.product", "product");
-
-    return query.getMany();
+  async findAll(userId: number): Promise<Like[]> {
+    return this.likesRepository.findAll(userId);
   }
 
-  async remove(id: number, req: Request): Promise<void> {
-    const { userId } = req.user;
+  async delete(id: number, userId: number): Promise<void> {
     const user = await this.usersService.findOne(userId);
-
-    const deleteResult = await this.likeRepository.delete({ id, user });
-
+    const deleteResult = await this.likesRepository.delete(id, user);
     if (!deleteResult.affected) throw new NotFoundException(`Like id ${id} not found`);
   }
 }

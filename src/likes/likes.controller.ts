@@ -24,7 +24,8 @@ export class LikesController {
 
   @Post()
   async create(@Req() req: Request, @Res() res: Response, @Body() createLikeDto: CreateLikeDto) {
-    const newLike = await this.likesService.create(createLikeDto, req);
+    const userId: number = req.user.id;
+    const newLike = await this.likesService.create(createLikeDto, userId);
 
     return res.status(HttpStatus.CREATED).json({
       data: newLike,
@@ -35,7 +36,8 @@ export class LikesController {
 
   @Get()
   async findAll(@Res() res: Response, @Req() req: Request) {
-    const likes = await this.likesService.findAll(req);
+    const userId: number = req.user.id;
+    const likes = await this.likesService.findAll(userId);
 
     return res.status(HttpStatus.OK).json({
       data: likes,
@@ -46,7 +48,8 @@ export class LikesController {
 
   @Delete(":id")
   async remove(@Res() res: Response, @Req() req: Request, @Param("id", ParseIntPipe) id: number) {
-    await this.likesService.remove(id, req);
+    const userId: number = req.user.id;
+    await this.likesService.delete(id, userId);
 
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
