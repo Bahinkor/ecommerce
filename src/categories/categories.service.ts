@@ -1,53 +1,39 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
 
+import { CategoriesRepository } from "./categories.repository";
 import { CreateCategoryDto } from "./dto/create-category.dto";
 import { UpdateCategoryDto } from "./dto/update-category.dto";
 import { Category } from "./entities/category.entity";
 
 @Injectable()
 export class CategoriesService {
-  constructor(
-    @InjectRepository(Category)
-    private readonly categoryRepository: Repository<Category>,
-  ) {}
+  constructor(private readonly categoriesRepository: CategoriesRepository) {}
 
   create(createCategoryDto: CreateCategoryDto): Promise<Category> {
-    const category = this.categoryRepository.create(createCategoryDto);
-    return this.categoryRepository.save(category);
+    return this.categoriesRepository.create(createCategoryDto);
   }
 
   findAll(): Promise<Category[]> {
-    return this.categoryRepository.find({ relations: ["products"] });
+    return this.categoriesRepository.findAll();
   }
 
   async findOne(id: number): Promise<Category> {
-    const category = await this.categoryRepository.findOne({
-      where: { id },
-      relations: ["products"],
-    });
-
+    const category = await this.categoriesRepository.findOne(id);
     if (!category) throw new NotFoundException(`Category id ${id} is not found`);
-
     return category;
   }
 
   async update(id: number, updateCategoryDto: UpdateCategoryDto): Promise<Category> {
-    await this.findOne(id);
-
-    await this.categoryRepository.update({ id }, updateCategoryDto);
-
+    await this.categoriesRepository.update(id, updateCategoryDto);
     return this.findOne(id);
   }
 
   async remove(id: number): Promise<void> {
     const category: Category = await this.findOne(id);
     category.products = [];
-
     // Unlink all associated products to prevent foreign key constraint issues
-    await this.categoryRepository.save(category);
+    await this.categoriesRepository.save(category);
     // Remove the category from the database
-    await this.categoryRepository.remove(category);
+    await this.categoriesRepository.remove(category);
   }
 }
