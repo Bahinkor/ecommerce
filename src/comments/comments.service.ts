@@ -5,93 +5,61 @@ import { Repository } from "typeorm";
 import { ProductsService } from "../products/products.service";
 import { UsersService } from "../users/users.service";
 import { clearPhoneNumber } from "../utils/clearPhoneNumber";
+import { CommentsRepository } from "./comments.repository";
 import { CreateCommentDto } from "./dto/create-comment.dto";
 import { Comment } from "./entities/comment.entity";
 
 @Injectable()
 export class CommentsService {
   constructor(
-    @InjectRepository(Comment)
-    private readonly commentRepository: Repository<Comment>,
+    private readonly commentsRepository: CommentsRepository,
     private readonly usersService: UsersService,
     private readonly productsService: ProductsService,
   ) {}
 
   async create(userId: number, createCommentDto: CreateCommentDto): Promise<Comment> {
     const user = await this.usersService.findOne(userId);
-    const product = await this.productsService.findOne(createCommentDto.product_id);
+    const product = await this.productsService.findOne(createCommentDto.productId);
 
     let replayToComment: Comment | null = null;
-    if (createCommentDto.replay_to) {
-      replayToComment = await this.commentRepository.findOne({
-        where: { id: createCommentDto.replay_to },
-        relations: ["replay_to"],
-      });
-
-      if (!replayToComment)
-        throw new NotFoundException(`Comment id ${createCommentDto.replay_to} is not found`);
-      if (replayToComment.replay_to !== null)
+    if (createCommentDto.replayTo) {
+      replayToComment = await this.findOne(createCommentDto.replayTo);
+      if (replayToComment.replayTo !== null)
         throw new BadRequestException("You are not allowed to reply to this comment.");
     }
-
-    const comment = this.commentRepository.create({
-      ...createCommentDto,
-      user,
-      product,
-      replay_to: replayToComment,
-    });
-
-    return this.commentRepository.save(comment);
+    return this.commentsRepository.create(createCommentDto, user, product, replayToComment);
   }
 
   findAll(): Promise<Comment[]> {
-    return this.commentRepository.find({ relations: ["product", "user"] });
+    return this.commentsRepository.findAll();
   }
 
-  async findProductComments(productId: number): Promise<Comment[]> {
+  async findCommentsByProductId(productId: number): Promise<Comment[]> {
     await this.productsService.findOne(productId);
-
-    const comments = await this.commentRepository
-      .createQueryBuilder("comment")
-      .leftJoinAndSelect("comment.replies", "reply", "reply.is_accepted = :isAccepted", {
-        isAccepted: true,
-      })
-      .leftJoinAndSelect("comment.product", "product")
-      .leftJoinAndSelect("comment.user", "user")
-      .leftJoinAndSelect("reply.user", "replyUser")
-      .where("comment.productId = :productId", { productId })
-      .andWhere("comment.replay_to IS NULL")
-      .andWhere("comment.is_accepted = true")
-      .getMany();
-
+    const comments = await this.commentsRepository.findCommentsByProductId(productId);
     // remove phone_number from user data
     clearPhoneNumber(comments);
-
     return comments;
   }
 
   async findOne(id: number): Promise<Comment> {
-    const comment = await this.commentRepository.findOne({ where: { id } });
-
+    const comment = await this.commentsRepository.findOne(id);
     if (!comment) throw new NotFoundException(`Comment id ${id} is not found`);
-
     return comment;
   }
 
   async acceptComment(id: number): Promise<Comment> {
     const comment: Comment = await this.findOne(id);
-
-    comment.is_accepted = true;
-    return this.commentRepository.save(comment);
+    comment.isAccepted = true;
+    return this.commentsRepository.save(comment);
   }
 
-  async remove(id: number): Promise<void> {
+  async delete(id: number): Promise<void> {
     const comment: Comment = await this.findOne(id);
     comment.replies = [];
-
     // Unlink all associated replies to prevent foreign key constraint issues
-    await this.commentRepository.save(comment);
+    await this.commentsRepository.save(comment);
     // Remove the comment from the database
-    await this.commentRepository.remove(comment);
+    await this.commentsRepository.remove(comment);
   }
 }

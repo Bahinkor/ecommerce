@@ -54,7 +54,7 @@ export class CommentsController {
 
   @Get(":id")
   async findOne(@Res() res: Response, @Param("id", ParseIntPipe) id: number) {
-    const comments = await this.commentsService.findProductComments(id);
+    const comments = await this.commentsService.findCommentsByProductId(id);
 
     return res.status(HttpStatus.OK).json({
       data: comments,
@@ -78,7 +78,7 @@ export class CommentsController {
   @Delete(":id")
   @UseGuards(JwtAuthGuard, AdminGuard)
   async remove(@Res() res: Response, @Param("id", ParseIntPipe) id: number) {
-    await this.commentsService.remove(id);
+    await this.commentsService.delete(id);
 
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,

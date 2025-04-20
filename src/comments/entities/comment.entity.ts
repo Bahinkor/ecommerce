@@ -19,8 +19,8 @@ export class Comment {
   @Column()
   text: string;
 
-  @Column({ default: false })
-  is_accepted: boolean;
+  @Column({ default: false, name: "is_accepted" })
+  isAccepted: boolean;
 
   @ManyToOne(() => User, (user: User) => user.comments)
   user: User;
@@ -29,14 +29,14 @@ export class Comment {
   product: Product;
 
   @ManyToOne(() => Comment, (comment: Comment) => comment.replies, { nullable: true })
-  replay_to: Comment | null;
+  replayTo: Comment | null;
 
-  @OneToMany(() => Comment, (comment: Comment) => comment.replay_to)
+  @OneToMany(() => Comment, (comment: Comment) => comment.replayTo)
   replies: Comment[];
 
-  @CreateDateColumn()
-  created_at: Date;
+  @CreateDateColumn({ name: "created_at" })
+  createdAt: Date;
 
-  @UpdateDateColumn()
-  updated_at: Date;
+  @UpdateDateColumn({ name: "updated_at" })
+  updatedAt: Date;
 }

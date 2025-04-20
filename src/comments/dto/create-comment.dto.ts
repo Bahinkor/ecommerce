@@ -8,9 +8,9 @@ export class CreateCommentDto {
 
   @IsNumber()
   @IsNotEmpty()
-  product_id: number;
+  productId: number;
 
   @IsNumber()
   @IsOptional()
-  replay_to: number;
+  replayTo: number;
 }
