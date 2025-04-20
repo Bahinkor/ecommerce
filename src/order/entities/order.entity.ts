@@ -27,21 +27,21 @@ export class Order {
   @OneToMany(() => OrderItem, (orderItem: OrderItem) => orderItem.order)
   items: OrderItem[];
 
-  @Column({ type: "bigint", default: 0 })
-  total_price: number;
+  @Column({ type: "bigint", default: 0, name: "total_price" })
+  totalPrice: number;
 
-  @Column({ type: "varchar", nullable: true })
-  discount_code: string;
+  @Column({ type: "varchar", nullable: true, name: "discount_code" })
+  discountCode: string;
 
   @Column({ type: "enum", enum: OrderStatusEnum, default: OrderStatusEnum.PENDING })
   status: OrderStatusEnum;
 
-  @Column({ type: "timestamp" })
-  payed_time: Date;
+  @Column({ type: "timestamp", name: "payed_time" })
+  payedTime: Date;
 
-  @CreateDateColumn()
-  created_at: Date;
+  @CreateDateColumn({ name: "created_at" })
+  createdAt: Date;
 
-  @UpdateDateColumn()
-  updated_at: Date;
+  @UpdateDateColumn({ name: "updated_at" })
+  updatedAt: Date;
 }
