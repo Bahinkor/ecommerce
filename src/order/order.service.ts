@@ -6,7 +6,6 @@ import { User } from "../users/entities/user.entity";
 import { UsersService } from "../users/users.service";
 import { CreateOrderDto } from "./dto/create-order.dto";
 import { Order } from "./entities/order.entity";
-import { OrderStatusEnum } from "./enums/order-status.enum";
 import { OrderItemRepository } from "./order-item.repository";
 import { OrderRepository } from "./order.repository";
 
@@ -47,7 +46,7 @@ export class OrderService {
     return this.orderRepository.findAll();
   }
 
-  async findOne(id: number, userId: number): Promise<Order> {
+  async findOneByIdAndUserId(id: number, userId: number): Promise<Order> {
     const order = await this.orderRepository.findOneByIdAndUserId(id, userId);
     if (!order) throw new NotFoundException("Order not found");
     return order;

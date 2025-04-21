@@ -17,7 +17,7 @@ import { JwtAuthGuard } from "../auth/jwt-guard/jwt-guard.guard";
 import { CreateTicketDto } from "./dto/create-ticket.dto";
 import { TicketsService } from "./tickets.service";
 
-@Controller("tickets")
+@Controller({ path: "tickets", version: "1" })
 @UseGuards(JwtAuthGuard)
 export class TicketsController {
   constructor(private readonly ticketsService: TicketsService) {}

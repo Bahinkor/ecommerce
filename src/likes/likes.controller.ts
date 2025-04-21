@@ -17,7 +17,7 @@ import { JwtAuthGuard } from "../auth/jwt-guard/jwt-guard.guard";
 import { CreateLikeDto } from "./dto/create-like.dto";
 import { LikesService } from "./likes.service";
 
-@Controller("likes")
+@Controller({ path: "likes", version: "1" })
 @UseGuards(JwtAuthGuard)
 export class LikesController {
   constructor(private readonly likesService: LikesService) {}

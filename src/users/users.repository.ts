@@ -38,7 +38,7 @@ export class UsersRepository {
   async fineOne(id: number): Promise<User | null> {
     return this.userRepository.findOne({
       where: { id },
-      relations: ["basket_items", "addresses", "orders"],
+      relations: ["basketItems", "addresses", "orders"],
     });
   }
 

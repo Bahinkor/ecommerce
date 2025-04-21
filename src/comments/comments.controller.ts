@@ -19,7 +19,7 @@ import { JwtAuthGuard } from "../auth/jwt-guard/jwt-guard.guard";
 import { CommentsService } from "./comments.service";
 import { CreateCommentDto } from "./dto/create-comment.dto";
 
-@Controller("comments")
+@Controller({ path: "comments", version: "1" })
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}
 

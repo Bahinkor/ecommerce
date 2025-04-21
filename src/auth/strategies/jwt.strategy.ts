@@ -26,14 +26,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     const user: User | null = await this.usersService.findOne(payload.sub);
 
-    if (!user) {
-      throw new UnauthorizedException("Invalid token");
-    }
-
     return {
-      userId: user.id,
-      phone_number: user.phoneNumber,
-      display_name: user.displayName,
+      id: user.id,
+      phoneNumber: user.phoneNumber,
+      displayName: user.displayName,
       role: user.role,
     };
   }

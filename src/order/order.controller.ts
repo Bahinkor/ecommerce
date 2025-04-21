@@ -18,14 +18,14 @@ import { Order } from "src/order/entities/order.entity";
 import { CreateOrderDto } from "./dto/create-order.dto";
 import { OrderService } from "./order.service";
 
-@Controller("order")
+@Controller({ path: "order", version: "1" })
 @UseGuards(JwtAuthGuard)
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
   @Post()
   async create(@Req() req: Request, @Res() res: Response, @Body() createOrderDto: CreateOrderDto) {
-    const { userId } = req.user;
+    const userId = req.user.id;
     const order: Order = await this.orderService.create(createOrderDto, userId);
 
     return res.status(HttpStatus.CREATED).json({
@@ -49,8 +49,8 @@ export class OrderController {
 
   @Get(":id")
   async findOne(@Req() req: Request, @Res() res: Response, @Param("id", ParseIntPipe) id: number) {
-    const { userId } = req.user;
-    const order: Order = await this.orderService.findOne(id, userId);
+    const userId = req.user.id;
+    const order: Order = await this.orderService.findOneByIdAndUserId(id, userId);
 
     return res.status(HttpStatus.OK).json({
       data: order,

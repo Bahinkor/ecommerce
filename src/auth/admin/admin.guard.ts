@@ -6,7 +6,7 @@ export class AdminGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
-
+    console.log(user);
     if (!user) throw new UnauthorizedException("You must be logged in to access this resource");
 
     if (user.role !== "admin")
