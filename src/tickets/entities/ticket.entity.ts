@@ -35,14 +35,14 @@ export class Ticket {
   user: User;
 
   @ManyToOne(() => Ticket, (ticket: Ticket) => ticket.replies, { nullable: true })
-  reply_to: Ticket | null;
+  replyTo: Ticket | null;
 
-  @OneToMany(() => Ticket, (ticket: Ticket) => ticket.reply_to)
+  @OneToMany(() => Ticket, (ticket: Ticket) => ticket.replyTo)
   replies: Ticket[];
 
-  @CreateDateColumn()
-  created_at: Date;
+  @CreateDateColumn({ name: "created_at" })
+  createdAt: Date;
 
-  @UpdateDateColumn()
-  updated_at: Date;
+  @UpdateDateColumn({ name: "updated_at" })
+  updatedAt: Date;
 }

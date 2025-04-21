@@ -1,64 +1,47 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
 
 import { UsersService } from "../users/users.service";
 import { CreateTicketDto } from "./dto/create-ticket.dto";
 import { Ticket } from "./entities/ticket.entity";
+import { TicketsRepository } from "./tickets.repository";
 
 @Injectable()
 export class TicketsService {
   constructor(
-    @InjectRepository(Ticket)
-    private readonly ticketRepository: Repository<Ticket>,
+    private readonly ticketsRepository: TicketsRepository,
     private readonly userService: UsersService,
   ) {}
 
   async create(createTicketDto: CreateTicketDto): Promise<Ticket> {
-    try {
-      const { user_id, replay_to, ...ticketData } = createTicketDto;
-      const user = await this.userService.findOne(user_id);
+    const user = await this.userService.findOne(createTicketDto.userId);
 
-      let replayToTicket: Ticket | null = null;
-      if (replay_to) {
-        replayToTicket = await this.ticketRepository.findOneOrFail({
-          where: { id: replay_to },
-          relations: ["reply_to"],
-        });
-        if (replayToTicket.reply_to !== null)
-          throw new BadRequestException("You are not allowed to reply to this ticket.");
-      }
-
-      const newTicket = this.ticketRepository.create({
-        ...ticketData,
-        user,
-        reply_to: replayToTicket,
-      });
-
-      return await this.ticketRepository.save(newTicket);
-    } catch (e) {
-      throw new NotFoundException(e.message);
+    let replayToTicket: Ticket | null = null;
+    if (createTicketDto.replayTo) {
+      replayToTicket = await this.findOne(createTicketDto.replayTo);
+      if (replayToTicket.replyTo !== null)
+        throw new BadRequestException("You are not allowed to reply to this ticket.");
     }
+
+    return this.ticketsRepository.create(createTicketDto, user, replayToTicket);
   }
 
   findAll(): Promise<Ticket[]> {
-    return this.ticketRepository
-      .createQueryBuilder("tickets")
-      .where("tickets.reply_to IS NULL")
-      .getMany();
+    return this.ticketsRepository.findAll();
   }
 
   async findOne(id: number): Promise<Ticket> {
-    try {
-      const ticket = await this.ticketRepository.findOne({
-        where: { id },
-        relations: ["replies", "reply_to"],
-      });
-      if (!ticket) throw new NotFoundException(`Ticket id ${id} not found`);
+    const ticket = await this.ticketsRepository.findOne(id);
+    if (!ticket) throw new NotFoundException(`Ticket id ${id} not found`);
+    return ticket;
+  }
 
-      return ticket;
-    } catch (e) {
-      throw new BadRequestException(e.message);
-    }
+  async findByUserId(userId: number): Promise<Ticket[]> {
+    return this.ticketsRepository.findByUserId(userId);
+  }
+
+  async findByIdAndUserId(id: number, userId: number): Promise<Ticket> {
+    const ticket = await this.ticketsRepository.findByIdAndUserId(id, userId);
+    if (!ticket) throw new NotFoundException(`Ticket id ${id} not found`);
+    return ticket;
   }
 }

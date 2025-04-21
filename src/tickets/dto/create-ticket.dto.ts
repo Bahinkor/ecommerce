@@ -15,9 +15,9 @@ export class CreateTicketDto {
 
   @IsNumber()
   @IsNotEmpty()
-  user_id: number;
+  userId: number;
 
   @IsNumber()
   @IsOptional()
-  replay_to: number;
+  replayTo: number;
 }
