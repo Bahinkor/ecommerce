@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { In, Repository } from "typeorm";
 
 import { CreateCategoryDto } from "./dto/create-category.dto";
 import { UpdateCategoryDto } from "./dto/update-category.dto";
@@ -20,6 +20,10 @@ export class CategoriesRepository {
 
   async findAll(): Promise<Category[]> {
     return this.categoryRepository.find({ relations: ["products"] });
+  }
+
+  async findByIds(ids: number[]): Promise<Category[]> {
+    return this.categoryRepository.findBy({ id: In(ids) });
   }
 
   async findOne(id: number): Promise<Category | null> {

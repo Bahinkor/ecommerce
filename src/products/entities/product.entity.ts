@@ -42,11 +42,11 @@ export class Product {
   @OneToMany(() => Like, (like: Like) => like.product)
   likes: Like[];
 
-  @CreateDateColumn()
-  created_at: Date;
+  @CreateDateColumn({ name: "created_at" })
+  createdAt: Date;
 
-  @UpdateDateColumn()
-  updated_at: Date;
+  @UpdateDateColumn({ name: "updated_at" })
+  updatedAt: Date;
 
   @ManyToMany(() => Category, (category: Category) => category.products)
   @JoinTable({
@@ -56,6 +56,6 @@ export class Product {
   })
   categories: Category[];
 
-  @ManyToMany(() => User, (user: User) => user.basket_items)
+  @ManyToMany(() => User, (user: User) => user.basketItems)
   baskets: User[];
 }

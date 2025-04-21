@@ -14,6 +14,7 @@ import {
 } from "@nestjs/common";
 import { Request, Response } from "express";
 
+import { AdminGuard } from "../auth/admin/admin.guard";
 import { JwtAuthGuard } from "../auth/jwt-guard/jwt-guard.guard";
 import { CreateProductDto } from "./dto/create-product.dto";
 import { UpdateProductDto } from "./dto/update-product.dto";
@@ -24,6 +25,7 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard, AdminGuard)
   async create(@Res() res: Response, @Body() createProductDto: CreateProductDto) {
     const product = await this.productsService.create(createProductDto);
 
@@ -57,6 +59,7 @@ export class ProductsController {
   }
 
   @Patch(":id")
+  @UseGuards(JwtAuthGuard, AdminGuard)
   async update(
     @Res() res: Response,
     @Param("id", ParseIntPipe) id: number,
@@ -71,14 +74,15 @@ export class ProductsController {
     });
   }
 
-  @Post("add-basket/:productId")
+  @Post("basket/:productId")
   @UseGuards(JwtAuthGuard)
   async addBasket(
     @Res() res: Response,
     @Req() req: Request,
     @Param("productId", ParseIntPipe) productId: number,
   ) {
-    await this.productsService.addItemToBasket(productId, req);
+    const userId = req.user.id;
+    await this.productsService.addItemToBasket(productId, userId);
 
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
@@ -86,18 +90,19 @@ export class ProductsController {
     });
   }
 
-  @Delete("remove-basket/:productId")
+  @Delete("basket/:productId")
   @UseGuards(JwtAuthGuard)
   async removeBasket(
     @Res() res: Response,
     @Req() req: Request,
     @Param("productId", ParseIntPipe) productId: number,
   ) {
-    await this.productsService.removeItemFromBasket(productId, req);
+    const userId = req.user.id;
+    await this.productsService.removeItemFromBasket(productId, userId);
 
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
-      message: "Product added to basket successfully",
+      message: "Product removes to basket successfully",
     });
   }
 
