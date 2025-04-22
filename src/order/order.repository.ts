@@ -47,4 +47,8 @@ export class OrderRepository {
   async updateTotalPrice(id: number, totalPrice: number) {
     await this.orderRepository.update({ id }, { totalPrice });
   }
+
+  async save(order: Order): Promise<Order> {
+    return this.orderRepository.save(order);
+  }
 }

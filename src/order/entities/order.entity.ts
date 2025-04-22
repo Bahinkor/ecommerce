@@ -9,6 +9,7 @@ import {
 } from "typeorm";
 
 import { Address } from "../../addresses/entities/address.entity";
+import { Payment } from "../../payment/entities/payment.entity";
 import { User } from "../../users/entities/user.entity";
 import { OrderStatusEnum } from "../enums/order-status.enum";
 import { OrderItem } from "./order-item.entity";
@@ -26,6 +27,9 @@ export class Order {
 
   @OneToMany(() => OrderItem, (orderItem: OrderItem) => orderItem.order)
   items: OrderItem[];
+
+  @OneToMany(() => Payment, (payment: Payment) => payment.order)
+  payments: Payment[];
 
   @Column({ type: "bigint", default: 0, name: "total_price" })
   totalPrice: number;

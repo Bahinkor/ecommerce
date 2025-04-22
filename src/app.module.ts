@@ -19,6 +19,7 @@ import { OrderModule } from "./order/order.module";
 import { ProductsModule } from "./products/products.module";
 import { TicketsModule } from "./tickets/tickets.module";
 import { UsersModule } from "./users/users.module";
+import { PaymentModule } from './payment/payment.module';
 
 if (process.env.NODE_ENV === "test") {
   dotenv.config({ path: ".env.test" });
@@ -53,6 +54,7 @@ if (process.env.NODE_ENV === "test") {
     CommentsModule,
     LikesModule,
     OrderModule,
+    PaymentModule,
   ],
 })
 export class AppModule implements NestModule {
