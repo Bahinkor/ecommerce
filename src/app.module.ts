@@ -16,10 +16,10 @@ import { dataSourceOptions } from "./common/db/data-source";
 import { LoggerMiddleware } from "./common/middleware/logger.middleware";
 import { LikesModule } from "./likes/likes.module";
 import { OrderModule } from "./order/order.module";
+import { PaymentModule } from "./payment/payment.module";
 import { ProductsModule } from "./products/products.module";
 import { TicketsModule } from "./tickets/tickets.module";
 import { UsersModule } from "./users/users.module";
-import { PaymentModule } from './payment/payment.module';
 
 if (process.env.NODE_ENV === "test") {
   dotenv.config({ path: ".env.test" });
