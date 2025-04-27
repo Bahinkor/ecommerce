@@ -12,6 +12,7 @@ import {
   Res,
   UseGuards,
 } from "@nestjs/common";
+import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Response } from "express";
 
 import { AdminGuard } from "../auth/admin/admin.guard";
@@ -21,12 +22,15 @@ import { UpdateUserDto } from "./dto/update-user.dto";
 import { UserRoleEnum } from "./enums/user-role.enum";
 import { UsersService } from "./users.service";
 
+@ApiTags("Users")
 @Controller({ path: "users", version: "1" })
 @UseGuards(JwtAuthGuard, AdminGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
+  @ApiOperation({ summary: "Create a new user" })
+  @ApiResponse({ status: HttpStatus.CREATED, description: "User created successfully" })
   async create(@Body() createUserDto: CreateUserDto, @Res() res: Response): Promise<object> {
     const newUser = await this.usersService.create(createUserDto);
 
@@ -38,6 +42,7 @@ export class UsersController {
   }
 
   @Get()
+  @ApiOperation({ summary: "Get all users" })
   async findAll(
     @Res() res: Response,
     @Query("role") role?: UserRoleEnum,
@@ -54,6 +59,7 @@ export class UsersController {
   }
 
   @Get(":id")
+  @ApiOperation({ summary: "Get a single user by id" })
   async findOne(@Param("id", ParseIntPipe) id: number, @Res() res: Response): Promise<object> {
     const user = await this.usersService.findOne(id);
 
@@ -65,6 +71,7 @@ export class UsersController {
   }
 
   @Put(":id")
+  @ApiOperation({ summary: "Update a user by id" })
   async update(
     @Res() res: Response,
     @Param("id", ParseIntPipe) id: number,
@@ -80,6 +87,7 @@ export class UsersController {
   }
 
   @Delete(":id")
+  @ApiOperation({ summary: "Delete a user by id" })
   async remove(@Param("id", ParseIntPipe) id: number, @Res() res: Response): Promise<object> {
     await this.usersService.delete(id);
 
