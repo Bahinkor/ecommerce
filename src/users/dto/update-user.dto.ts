@@ -4,14 +4,27 @@ import { IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength } from "class-valid
 import { UserRoleEnum } from "../enums/user-role.enum";
 
 export class UpdateUserDto {
-  @ApiProperty({ type: String, example: "John Doe", description: "User's display name" })
+  @ApiProperty({
+    type: "string",
+    example: "John Doe",
+    minLength: 1,
+    maxLength: 35,
+    description: "User's display name",
+    required: false,
+  })
   @IsString()
   @IsNotEmpty()
   @MaxLength(35)
   @IsOptional()
   displayName: string;
 
-  @ApiProperty({ type: String, example: "user", description: "User's role, user or admin" })
+  @ApiProperty({
+    type: "string",
+    example: "user",
+    enum: UserRoleEnum,
+    description: "User's role, user or admin",
+    required: false,
+  })
   @IsEnum(UserRoleEnum)
   @IsOptional()
   role: UserRoleEnum;

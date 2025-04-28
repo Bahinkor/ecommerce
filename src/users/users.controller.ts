@@ -12,17 +12,19 @@ import {
   Res,
   UseGuards,
 } from "@nestjs/common";
-import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Response } from "express";
 
 import { AdminGuard } from "../auth/admin/admin.guard";
 import { JwtAuthGuard } from "../auth/jwt-guard/jwt-guard.guard";
+import { ResponseDto } from "../common/dto/response.dto";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { UserRoleEnum } from "./enums/user-role.enum";
 import { UsersService } from "./users.service";
 
 @ApiTags("Users")
+@ApiBearerAuth()
 @Controller({ path: "users", version: "1" })
 @UseGuards(JwtAuthGuard, AdminGuard)
 export class UsersController {
@@ -30,7 +32,13 @@ export class UsersController {
 
   @Post()
   @ApiOperation({ summary: "Create a new user" })
-  @ApiResponse({ status: HttpStatus.CREATED, description: "User created successfully" })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    description: "User created successfully",
+    type: ResponseDto,
+  })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: "Unauthorized" })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: "Bad request" })
   async create(@Body() createUserDto: CreateUserDto, @Res() res: Response): Promise<object> {
     const newUser = await this.usersService.create(createUserDto);
 
@@ -43,6 +51,13 @@ export class UsersController {
 
   @Get()
   @ApiOperation({ summary: "Get all users" })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "Users fetched successfully",
+    type: ResponseDto,
+  })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: "Unauthorized" })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: "Bad request" })
   async findAll(
     @Res() res: Response,
     @Query("role") role?: UserRoleEnum,
@@ -59,7 +74,16 @@ export class UsersController {
   }
 
   @Get(":id")
-  @ApiOperation({ summary: "Get a single user by id" })
+  @ApiOperation({ summary: "Get one user by id" })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "User fetched successfully",
+    type: ResponseDto,
+  })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: "Unauthorized" })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: "Bad request" })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: "User not found" })
+  @ApiParam({ name: "id", type: "number", description: "User id" })
   async findOne(@Param("id", ParseIntPipe) id: number, @Res() res: Response): Promise<object> {
     const user = await this.usersService.findOne(id);
 
@@ -72,6 +96,15 @@ export class UsersController {
 
   @Put(":id")
   @ApiOperation({ summary: "Update a user by id" })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "Users updated successfully",
+    type: ResponseDto,
+  })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: "Unauthorized" })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: "Bad request" })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: "User not found" })
+  @ApiParam({ name: "id", type: "number", description: "User id" })
   async update(
     @Res() res: Response,
     @Param("id", ParseIntPipe) id: number,
@@ -88,6 +121,15 @@ export class UsersController {
 
   @Delete(":id")
   @ApiOperation({ summary: "Delete a user by id" })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "Users deleted successfully",
+    type: ResponseDto,
+  })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: "Unauthorized" })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: "Bad request" })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: "User not found" })
+  @ApiParam({ name: "id", type: "number", description: "User id" })
   async remove(@Param("id", ParseIntPipe) id: number, @Res() res: Response): Promise<object> {
     await this.usersService.delete(id);
 

@@ -13,13 +13,19 @@ import {
 import { UserRoleEnum } from "../enums/user-role.enum";
 
 export class CreateUserDto {
-  @ApiProperty({ type: String, example: "John Doe", description: "User's display name" })
+  @ApiProperty({
+    type: "string",
+    example: "John Doe",
+    minLength: 1,
+    maxLength: 35,
+    description: "User's display name",
+  })
   @IsString()
   @IsNotEmpty()
   @MaxLength(35)
   displayName: string;
 
-  @ApiProperty({ type: String, example: "09115555555", description: "User's phone number" })
+  @ApiProperty({ type: "string", example: "09115555555", description: "User's phone number" })
   @IsString()
   @IsNotEmpty()
   @Transform(({ value }) => value.trim())
@@ -28,8 +34,10 @@ export class CreateUserDto {
   phoneNumber: string;
 
   @ApiProperty({
-    type: String,
+    type: "string",
     example: "example-password",
+    minLength: 6,
+    maxLength: 16,
     description: "User's password, length should be between 6 and 16",
   })
   @IsString()
@@ -37,7 +45,12 @@ export class CreateUserDto {
   @Length(6, 16)
   password: string;
 
-  @ApiProperty({ type: String, example: "user", description: "User's role, user or admin" })
+  @ApiProperty({
+    type: "string",
+    enum: UserRoleEnum,
+    example: "user",
+    description: "User's role, user or admin",
+  })
   @IsEnum(UserRoleEnum)
   @IsOptional()
   role: UserRoleEnum;
