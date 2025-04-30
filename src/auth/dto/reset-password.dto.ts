@@ -1,7 +1,15 @@
+import { ApiProperty } from "@nestjs/swagger";
 import { Transform } from "class-transformer";
 import { IsNotEmpty, IsString, Length, Matches } from "class-validator";
 
 export class ResetPasswordDto {
+  @ApiProperty({
+    type: "string",
+    example: "09123456789",
+    minLength: 11,
+    maxLength: 11,
+    description: "Phone number",
+  })
   @IsString()
   @IsNotEmpty()
   @Transform(({ value }) => value.trim())
@@ -9,11 +17,25 @@ export class ResetPasswordDto {
   @Matches(/^09[0-9]{9}$/)
   phoneNumber: string;
 
+  @ApiProperty({
+    type: "string",
+    example: "123456",
+    minLength: 6,
+    maxLength: 6,
+    description: "OTP password",
+  })
   @IsString()
   @IsNotEmpty()
   @Length(6, 6)
   otpPassword: string;
 
+  @ApiProperty({
+    type: "string",
+    example: "new-password",
+    minLength: 6,
+    maxLength: 16,
+    description: "User's password, length should be between 6 and 16",
+  })
   @IsString()
   @IsNotEmpty()
   @Length(6, 16)
