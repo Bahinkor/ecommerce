@@ -11,18 +11,30 @@ import {
   Res,
   UseGuards,
 } from "@nestjs/common";
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Response } from "express";
 
 import { AdminGuard } from "../auth/admin/admin.guard";
 import { JwtAuthGuard } from "../auth/jwt-guard/jwt-guard.guard";
+import { ResponseDto } from "../common/dto/response.dto";
 import { CategoriesService } from "./categories.service";
 import { CreateCategoryDto } from "./dto/create-category.dto";
 import { UpdateCategoryDto } from "./dto/update-category.dto";
 
+@ApiTags("Categories")
 @Controller({ path: "categories", version: "1" })
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
+  @ApiOperation({ summary: "Create a new category" })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    description: "Category created successfully",
+    type: ResponseDto,
+  })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: "Unauthorized" })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: "Bad request" })
+  @ApiBearerAuth()
   @Post()
   @UseGuards(JwtAuthGuard, AdminGuard)
   async create(@Res() res: Response, @Body() createCategoryDto: CreateCategoryDto) {
@@ -35,6 +47,13 @@ export class CategoriesController {
     });
   }
 
+  @ApiOperation({ summary: "Get all categories" })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "Categories fetched successfully",
+    type: ResponseDto,
+  })
+  @ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: "Internal server error" })
   @Get()
   async findAll(@Res() res: Response) {
     const categories = await this.categoriesService.findAll();
@@ -46,6 +65,16 @@ export class CategoriesController {
     });
   }
 
+  @ApiOperation({ summary: "Update a category by id" })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "Category updated successfully",
+    type: ResponseDto,
+  })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: "Unauthorized" })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: "Bad request" })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: "Category not found" })
+  @ApiBearerAuth()
   @Put(":id")
   @UseGuards(JwtAuthGuard, AdminGuard)
   async update(
@@ -62,6 +91,15 @@ export class CategoriesController {
     });
   }
 
+  @ApiOperation({ summary: "Delete a category by id" })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "Category deleted successfully",
+    type: ResponseDto,
+  })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: "Unauthorized" })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: "Category not found" })
+  @ApiBearerAuth()
   @Delete(":id")
   @UseGuards(JwtAuthGuard, AdminGuard)
   async delete(@Res() res: Response, @Param("id", ParseIntPipe) id: number) {
