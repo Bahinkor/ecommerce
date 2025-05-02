@@ -1,28 +1,37 @@
 import {
-  Body,
   Controller,
-  Delete,
   Get,
   HttpStatus,
   Param,
   ParseIntPipe,
-  Patch,
   Post,
   Req,
   Res,
   UseGuards,
 } from "@nestjs/common";
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request, Response } from "express";
 
 import { AdminGuard } from "../auth/admin/admin.guard";
 import { JwtAuthGuard } from "../auth/jwt-guard/jwt-guard.guard";
+import { ResponseDto } from "../common/dto/response.dto";
 import { PaymentService } from "./payment.service";
 
+@ApiTags("Payment")
+@ApiBearerAuth()
 @Controller({ path: "payments", version: "1" })
 @UseGuards(JwtAuthGuard)
 export class PaymentController {
   constructor(private readonly paymentService: PaymentService) {}
 
+  @ApiOperation({ summary: "Create a new payment" })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    description: "Payment created successfully",
+    type: ResponseDto,
+  })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: "Unauthorized" })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: "Order not found" })
   @Post("create/:orderId")
   async create(
     @Req() req: Request,
@@ -39,6 +48,14 @@ export class PaymentController {
     });
   }
 
+  @ApiOperation({ summary: "Verify a payment" })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "Payment verified successfully",
+    type: ResponseDto,
+  })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: "Unauthorized" })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: "track id not found" })
   @Post("verify/:trackId")
   async verify(@Res() res: Response, @Param("trackId", ParseIntPipe) trackId: number) {
     const payment = await this.paymentService.verify(trackId);
@@ -50,6 +67,14 @@ export class PaymentController {
     });
   }
 
+  @ApiOperation({ summary: "Get all payments" })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "Payments found successfully",
+    type: ResponseDto,
+  })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: "Unauthorized" })
+  @ApiResponse({ status: HttpStatus.FORBIDDEN, description: "Forbidden" })
   @Get()
   @UseGuards(AdminGuard)
   async findAll(@Res() res: Response) {
