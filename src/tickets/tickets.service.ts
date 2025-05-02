@@ -12,8 +12,8 @@ export class TicketsService {
     private readonly userService: UsersService,
   ) {}
 
-  async create(createTicketDto: CreateTicketDto): Promise<Ticket> {
-    const user = await this.userService.findOne(createTicketDto.userId);
+  async create(createTicketDto: CreateTicketDto, userId: number): Promise<Ticket> {
+    const user = await this.userService.findOne(userId);
 
     let replayToTicket: Ticket | null = null;
     if (createTicketDto.replayTo) {
