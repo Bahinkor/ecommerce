@@ -12,18 +12,32 @@ import {
   Res,
   UseGuards,
 } from "@nestjs/common";
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request, Response } from "express";
 
 import { AdminGuard } from "../auth/admin/admin.guard";
 import { JwtAuthGuard } from "../auth/jwt-guard/jwt-guard.guard";
+import { ResponseDto } from "../common/dto/response.dto";
 import { CreateProductDto } from "./dto/create-product.dto";
 import { UpdateProductDto } from "./dto/update-product.dto";
 import { ProductsService } from "./products.service";
 
+@ApiTags("Products")
 @Controller({ path: "products", version: "1" })
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
+  @ApiOperation({ summary: "Create a new product" })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    description: "Product created successfully",
+    type: ResponseDto,
+  })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: "Invalid input" })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: "Unauthorized" })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: "Category not found" })
+  @ApiResponse({ status: HttpStatus.FORBIDDEN, description: "Forbidden" })
+  @ApiBearerAuth()
   @Post()
   @UseGuards(JwtAuthGuard, AdminGuard)
   async create(@Res() res: Response, @Body() createProductDto: CreateProductDto) {
@@ -36,6 +50,12 @@ export class ProductsController {
     });
   }
 
+  @ApiOperation({ summary: "Get all products" })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "Products fetched successfully",
+    type: ResponseDto,
+  })
   @Get()
   async findAll(@Res() res: Response) {
     const products = await this.productsService.findAll();
@@ -47,6 +67,13 @@ export class ProductsController {
     });
   }
 
+  @ApiOperation({ summary: "Get product by id" })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "Product fetched successfully",
+    type: ResponseDto,
+  })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: "Product not found" })
   @Get(":id")
   async findOne(@Res() res: Response, @Param("id", ParseIntPipe) id: number) {
     const product = await this.productsService.findOne(id);
@@ -58,6 +85,17 @@ export class ProductsController {
     });
   }
 
+  @ApiOperation({ summary: "Update a product by id" })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "Product updated successfully",
+    type: ResponseDto,
+  })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: "Invalid input" })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: "Unauthorized" })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: "Category not found" })
+  @ApiResponse({ status: HttpStatus.FORBIDDEN, description: "Forbidden" })
+  @ApiBearerAuth()
   @Patch(":id")
   @UseGuards(JwtAuthGuard, AdminGuard)
   async update(
@@ -74,6 +112,15 @@ export class ProductsController {
     });
   }
 
+  @ApiOperation({ summary: "Add product to basket" })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "Product added to basket successfully",
+    type: ResponseDto,
+  })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: "Unauthorized" })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: "Product not found" })
+  @ApiBearerAuth()
   @Post("basket/:productId")
   @UseGuards(JwtAuthGuard)
   async addBasket(
@@ -90,6 +137,15 @@ export class ProductsController {
     });
   }
 
+  @ApiOperation({ summary: "Remove product from basket" })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "Product removed from basket successfully",
+    type: ResponseDto,
+  })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: "Unauthorized" })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: "Product not found" })
+  @ApiBearerAuth()
   @Delete("basket/:productId")
   @UseGuards(JwtAuthGuard)
   async removeBasket(
@@ -106,6 +162,16 @@ export class ProductsController {
     });
   }
 
+  @ApiOperation({ summary: "Delete a product" })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: "Product deleted successfully",
+    type: ResponseDto,
+  })
+  @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: "Unauthorized" })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: "Product not found" })
+  @ApiResponse({ status: HttpStatus.FORBIDDEN, description: "Forbidden" })
+  @ApiBearerAuth()
   @Delete(":id")
   async remove(@Res() res: Response, @Param("id", ParseIntPipe) id: number) {
     await this.productsService.remove(id);
